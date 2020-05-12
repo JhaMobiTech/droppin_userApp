@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>642639141072-s8ovfu381hgu80bflm4c7bit9slk9tdd.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.642639141072-s8ovfu381hgu80bflm4c7bit9slk9tdd</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>642639141072-kmg44for1flnnupfmnh5h62vj9a3t0c4.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB6OZZ9LN83cbDLAE0A5CFr84-IPa4vm68</string>
+	<key>GCM_SENDER_ID</key>
+	<string>642639141072</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.droppin.client.user</string>
+	<key>PROJECT_ID</key>
+	<string>droppin-client</string>
+	<key>STORAGE_BUCKET</key>
+	<string>droppin-client.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:642639141072:ios:08e33890179a946a12a6d5</string>
+	<key>DATABASE_URL</key>
+	<string>https://droppin-client.firebaseio.com</string>
+</dict>
+</plist>

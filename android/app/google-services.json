@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "642639141072",
+    "firebase_url": "https://droppin-client.firebaseio.com",
+    "project_id": "droppin-client",
+    "storage_bucket": "droppin-client.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642639141072:android:857576e8b96ecf0012a6d5",
+        "android_client_info": {
+          "package_name": "com.droppin.client.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "642639141072-kmg44for1flnnupfmnh5h62vj9a3t0c4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droppin.client.user",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "642639141072-f0q8i89t9f9q4bsp29mju41683vkhf3q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBR7R1d4ZxRhdH-ft8MSLV9NWc0Is4BJjw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "642639141072-f0q8i89t9f9q4bsp29mju41683vkhf3q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "642639141072-s8ovfu381hgu80bflm4c7bit9slk9tdd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droppin.client.user"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
