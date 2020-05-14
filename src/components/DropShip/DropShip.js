@@ -34,6 +34,10 @@ import {
   timeoutPromise,
   onReload
 } from "./../../functions/connectionManage";
+
+import DateTimePicker from '@react-native-community/datetimepicker';
+import ImagePicker from 'react-native-image-picker';
+import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
 const resetAction = StackActions.reset({
   index: 0,
   actions: [NavigationActions.navigate({ routeName: "TabNavigator" })]
@@ -45,7 +49,13 @@ class Login extends Component {
     super(props);
     setActiveProccess(this.props.currentDis, "done");
     this.state = {
-      hide_pass: true,
+      date:new Date(1598051730000),
+      time:'00.00.00',
+      showCalendar:false,
+      showClock:false,
+      showIOSCalendar:false,
+      imagePath:null,
+      imageName:null,
       isloading: false,
       pickUpAddress: "",
       dropOffAdress: ""
@@ -117,7 +127,7 @@ class Login extends Component {
           <View style={styles.v_card_1}>
               
           <Card style={styles.card_1}>
-{/*             
+{/*            ///// 
           <Text style={styles.txt_name_item_details}>
                   {this.props.lang.item_details}
                 </Text> */}
@@ -168,14 +178,14 @@ class Login extends Component {
               <Text style={styles.txt_upload_header_name}>
                 {this.props.lang.upload_photo_header}
               </Text>
-              <TouchableOpacity style={styles.btn_3_item}>
+              <TouchableOpacity style={styles.btn_3_item} onPress={()=>this.uploadPhoto()}>
                 <Image style={styles.icon_cam} source={icons.upload_photo} />
                 <Text style={styles.txt_name_ic}>
                   {this.props.lang.upload_photo}
                   </Text>
               </TouchableOpacity>
             </View>
-          </Card>
+          </Card> 
         </View>
 
         <View style={styles.v_card_3}>
@@ -185,7 +195,7 @@ class Login extends Component {
             
             <TouchableOpacity
             style={styles.schedule_touch}
-            onPress={() => this.onLoginPressed()}
+            onPress={() => this.scheduleTime()}
            >
               <LinearGradient
                 start={{ x: 0, y: 0 }}
@@ -199,7 +209,7 @@ class Login extends Component {
 
             <TouchableOpacity
             style={styles.deliver_touch}
-            onPress={() => this.onLoginPressed()}
+            onPress={() =>  this.deliverNow()}
            >
               <LinearGradient
                 start={{ x: 0, y: 0 }}
@@ -218,132 +228,113 @@ class Login extends Component {
           </Card>
         </View>
 
+      {this.state.showIOSCalendar && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          timeZoneOffsetInMinutes={0}
+          value={this.state.date}
+          mode='datetime'
+          is24Hour={true}
+          display="default"
+          onChange={this.onChange}
+        />
+      )}
 
-          
-          
+      {this.state.showCalendar && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          timeZoneOffsetInMinutes={0}
+          value={this.state.date}
+          mode='date'
+          is24Hour={true}
+          display="default"
+          onChange={this.onChange}
+        />
+      )}
+
+      {this.state.showClock && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          timeZoneOffsetInMinutes={0}
+          value={this.state.date}
+          mode='time'
+          is24Hour={true}
+          display="default"
+          onChange={this.onChangeTime}
+        />
+      )}
 
           {SimpleLoading(this.props.proccess == "loading" ? true : false)}
         </Content>
       </Container>
     );
   }
-  onLoginPressed() {
-    if (this.state.username == "") {
-      Alert.alert(
-        this.props.lang.warning,
-        this.props.lang.user_name + this.props.lang.is_required
-      );
-    } else if (this.state.password == "") {
-      Alert.alert(
-        this.props.lang.warning,
-        this.props.lang.password + this.props.lang.is_required
-      );
-    } else {
-      // setActiveProccess(this.props.currentDis, "loading");
-      timeoutPromise(
-        10000,
-        manualLoggin(this.state.username, this.state.password, this.props),
-        this.props,
-        [this.props.lang.alert, this.props.lang.connection_failed]
-      );
-    }
-  }
-
-  // Login with facebook ------
-  handleFacebookLogin = () => {
-    // Attempt a login using the Facebook login dialog asking for default permissions.
-    if (Platform.OS === "android") {
-      LoginManager.setLoginBehavior("web_only");
-    }
-    // LoginManager.logOut();
-    LoginManager.logInWithPermissions([
-      "email"
-      // "user_gender",
-      // "user_birthday"
-    ]).then(
-      result => {
-        if (result.isCancelled) {
-          console.log("Login cancelled");
-        } else {
-          this.setState({ isloading: true });
-          AccessToken.getCurrentAccessToken().then(data => {
-            // console.log("Data: " + data.accessToken);
-            const infoRequest = new GraphRequest(
-              "me/",
-              {
-                accessToken: data.accessToken,
-                parameters: {
-                  fields: {
-                    string:
-                      "email,name,first_name,middle_name,last_name,birthday"
-                  }
-                }
-              },
-              (error, result) => {
-                if (error) {
-                  this.setState({ isloading: false });
-                  Alert.alert(
-                    this.props.lang.something_went_wrong,
-                    this.props.lang.can_not_login_by_fb
-                  );
-                } else {
-                  this.checkAccount(result);
-                }
-              }
-            );
-            // Start the graph request.
-            new GraphRequestManager().addRequest(infoRequest).start();
-          });
-        }
+  uploadPhoto = ()=>{
+ 
+    requestMultiple([PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE, PERMISSIONS.ANDROID.CAMERA]).then(
+      (statuses) => {
+        console.log('Camera', statuses[PERMISSIONS.ANDROID.CAMERA]);
+        console.log('external storage', statuses[PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE]);
       },
-      error => {
-        this.setState({ isloading: false });
-        Alert.alert(
-          this.props.login_failed,
-          this.props.lang.can_not_login_by_fb
-        );
-      }
     );
-  };
+    const options = {
+      title: 'Select Photo',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
 
-  checkAccount(result) {
-    if (result !== undefined && result !== null && result.id !== undefined) {
-      fetch(ads + url.check_fb_account_by_id, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          fb_id: result.id
-        })
-      })
-        .then(response => response.json())
-        .then(responseJson => {
-          console.log("Hello" + JSON.stringify(responseJson));
-          if (responseJson == "NO") {
-            this.setState({ isloading: false });
-            this.props.navigation.navigate("PhoneInput", {
-              fbdata: result
-            });
-          } else {
-            storeActiveUser(this.props.currentDis, responseJson);
-            this.setState({ isloading: false });
-            this.props.navigation.dispatch(resetAction);
-          }
-        })
-        .catch(error => {
-          // console.error(error);
-          this.setState({ isloading: false });
-          Alert.alert(
-            this.props.lang.something_went_wrong,
-            this.props.there_is_error_while_checking_data
-          );
+    ImagePicker.showImagePicker(options, (response) => {
+     
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        this.setState({
+          imagePath: response.uri,
+          imageName:response.fileName,
         });
-    } else {
-      this.setState({ isloading: false });
+        console.log('uri and file name: ',response.uri,response.fileName)
+      }
+    });
+
+  }
+  scheduleTime= async()=>{
+    if(Platform.OS === 'ios'){
+      this.setState({ showIOSCalendar:true})
+    }
+    if(Platform.OS === 'android'){
+      this.setState({showCalendar:true})
     }
   }
+  onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || this.state.date;
+
+    if(Platform.OS === 'ios'){
+      this.setState({date:currentDate,showIOSCalendar:false})
+      this.deliverNow()
+    }
+    
+    if(Platform.OS === 'android'){
+      this.setState({date:currentDate,showCalendar:false,showClock:true})
+    }
+  }
+  onChangeTime = (event, selectedTime) => {
+    const currentTime = selectedTime || this.state.time;
+    this.setState({time:currentTime,showClock:false})
+    this.deliverNow()
+  }
+
+  deliverNow =()=>{
+    this.props.navigation.navigate('Summary')
+  }
+
+
+ 
 }
 const mapStateToProps = state => {
   return {

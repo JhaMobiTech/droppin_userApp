@@ -52,8 +52,8 @@ const cate = [
     id: 1
   },
   {
-    title: "Redeem",
-    img: icons.coin_orrange,
+    title: "Dropship",
+    img: icons.delivery_boy_doorStep,
     id: 2
   },
   {
@@ -883,7 +883,7 @@ class Home extends Component {
             if (item.id == 1) {
               this.props.navigation.navigate("FlashDeals");
             } else if (item.id == 2) {
-              this.props.navigation.navigate("Redeem");
+              this.props.navigation.navigate("DropShip");
             } else if (item.id == 3) {
               this.props.navigation.navigate("Voucher");
             } else if (item.id == 4) {

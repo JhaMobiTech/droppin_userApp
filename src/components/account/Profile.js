@@ -332,12 +332,7 @@ class Profile extends Component {
           >
             <Text style={styles.txt_signup}>{this.props.lang.register}</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.signup}
-            onPress={() => this.props.navigation.navigate("DropShip")}
-          >
-            <Text style={styles.txt_signup}>Drop Ship</Text>
-          </TouchableOpacity>
+          
         </View>
       </View>
     );

@@ -2,10 +2,13 @@ export const icons = {
   droppin_logo_white: require("./Iconfiles/droppin_logo_white.png"),
   droppin_logo_org_outline_125: require("./Iconfiles/droppin_logo_org_outline_125.png"),
   deliveryBoy: require("./Iconfiles/deliveryBoy.png"),
+  delivery_boy_doorStep:require("./Iconfiles/delivery_boy_doorStep.png"),
   dropPlace: require("./Iconfiles/dropPlace.png"),
   documents: require("./Iconfiles/documents.png"),
   pickUp: require("./Iconfiles/pickUp.png"),
   upload_photo: require("./Iconfiles/upload_photo.png"),
+  summary_photo:require("./Iconfiles/summary.png"),
+  note:require("./Iconfiles/note.png"),
   // Tab bar icon ----------------
   home_pink_outline_50x50: require("./Iconfiles/home_pink_outline_50x50.png"),
   home_gray_outline_50x50: require("./Iconfiles/home_gray_outline_50x50.png"),

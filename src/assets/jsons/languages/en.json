@@ -58,6 +58,7 @@
   "can_not_verify_phone_this_time": "Can not verify phone number this time !",
   "connection_failed": "Connection failed !",
   "cloths":"Cloths",
+  "change_delivery_time":"Change",
 
   "delivery": "Delivery",
   "delivery_option": "Delivery Option",
@@ -259,6 +260,8 @@
   "something_went_wrong": "Something went wrong !",
   "server_not_response": "No response from server !",
   "schedule_button":" Schedule(>20 min)",
+  "summary":"Summary",
+  "select_payment_method":"Select Payment Method",
 
   "toys": "Toys",
   "top_selection": "Top Selection",
