@@ -10,11 +10,15 @@ import {
   View,
   Text,
   Image,
+  StyleSheet,
+  Dimensions,
   TouchableOpacity,
   StatusBar,
   TextInput,
   ScrollView,
   SafeAreaView,
+  Animated,
+  Modal,
   Platform,Button,
   Alert
 } from "react-native";
@@ -36,6 +40,7 @@ import {
 } from "./../../functions/connectionManage";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImagePicker from 'react-native-image-picker';
+import CheckBox from '@react-native-community/checkbox'
 
 const resetAction = StackActions.reset({
   index: 0,
@@ -48,13 +53,8 @@ class Summary extends Component {
     super(props);
     setActiveProccess(this.props.currentDis, "done");
     this.state = {
-      date:new Date(1598051730000),
-      mode:'datetime',
-      show:false,
-      pickUpAddress: "",
-      dropOffAdress: "",
-      photoUri:null,
-      photoName:null,
+      modalVisible:false,
+      animation: new Animated.Value(0),
     };
   }
   componentDidMount() {
@@ -71,6 +71,37 @@ class Summary extends Component {
   render() {
     const { goBack } = this.props.navigation;
     const { selected, makedef, onAdd } = this.state;
+    const { width, height } = Dimensions.get("screen");
+
+    const screenHeight = Dimensions.get("window").height;
+    const backdrop = {
+      transform: [
+        {
+          translateY: this.state.animation.interpolate({
+            inputRange: [0, 0.01],
+            outputRange: [screenHeight, 0],
+            extrapolate: "clamp",
+          }),
+        },
+      ],
+      opacity: this.state.animation.interpolate({
+        inputRange: [0.01, 0.5],
+        outputRange: [0, 1],
+        extrapolate: "clamp",
+      }),
+    };
+
+    const slideUp = {
+      transform: [
+        {
+          translateY: this.state.animation.interpolate({
+            inputRange: [0.01, 1],
+            outputRange: [0, -1 * screenHeight],
+            extrapolate: "clamp",
+          }),
+        },
+      ],
+    };
     return (
       <Container>
         <Header noShadow={true} style={styles.header}>
@@ -133,16 +164,55 @@ class Summary extends Component {
                 underlineColorAndroid="transparent"
               />
           </View>
-          <View style={{alignItems:'center',flexDirection:'row'}}>
-            <Text style={{position: 'relative',
-              left:'-84%',
-              
-              top:'-60%',
-              fontSize:13,
-              color:'#000'}}>Name <Text style={{color:'red'}}>*</Text></Text>
-
+          <View style={styles.name_container}>
+            <Text style={styles.name_input}>Name <Text style={{color:'red'}}>*</Text></Text>
               
           </View>
+          <View style={styles.name_container}>
+            <Text style={styles.number_input}>Phone Number <Text style={{color:'red'}}>*</Text></Text>
+          </View>
+
+          <View style={styles.sm_name_input_container}>
+              <TextInput
+                style={{ flex: 1 }}
+                placeholder="Name"
+                underlineColorAndroid="transparent"
+              />
+          </View>
+          <View style={styles.sm_number_input_container}>
+              <TextInput
+                style={{ flex: 1 }}
+                placeholder="Phone number"
+                underlineColorAndroid="transparent"
+              />
+          </View>
+          
+            <Text style={styles.dropOff_address_label}>{this.props.lang.dropPlace}</Text>
+            <Text style={styles.dropOff_address}>{this.props.lang.dropPlace}</Text>
+            <Text style={styles.recipient_note}>Recipient Detail</Text>
+
+
+          <View style={styles.name_container}>
+            <Text style={styles.recipient_name_input}>Name <Text style={{color:'red'}}>*</Text></Text>
+            <Text style={styles.recipient_number_input}>Phone Number <Text style={{color:'red'}}>*</Text></Text>
+          </View>
+          
+          <View style={styles.recipient_name_input_txt}>
+              <TextInput
+                style={{ flex: 1 }}
+                placeholder="Name"
+                underlineColorAndroid="transparent"
+              />
+          </View>
+          <View style={styles.recipient_number_input_txt}>
+              <TextInput
+                style={{ flex: 1 }}
+                placeholder="Phone number"
+                underlineColorAndroid="transparent"
+              />
+          </View>
+
+            
             </Card>
         </View>
         <View style={styles.v_card_3}>
@@ -153,9 +223,7 @@ class Summary extends Component {
             
             <TouchableOpacity
             style={styles.schedule_touch}
-            onPress={() => this.scheduleDate()
-            
-            }
+            onPress={() => this.handleOpen()}
            >
               <LinearGradient
                 start={{ x: 0, y: 0 }}
@@ -171,17 +239,99 @@ class Summary extends Component {
             <Text style={styles.total_amt_txt}>455 LAK</Text>
           </Card>
         </View>
-    
         
-
 
           {SimpleLoading(this.props.proccess == "loading" ? true : false)}
         </Content>
         </ScrollView>
+
+       
+<Animated.View style={[StyleSheet.absoluteFill, styless.cover, backdrop]}>
+  <View style={[styless.sheet]}>
+    <Animated.View style={[styless.popup, slideUp]}>
+      <View style={{flexDirection:'row',alignItems:'center'}}>
+
+      <Text style={{alignItems:'center',fontSize:22,marginTop:10,marginLeft:50,justifyContent:'space-around'}}>Payment Method</Text>
+      <TouchableOpacity onPress={this.handleClose} style={{marginLeft:50,marginTop:10,marginRight:-30}}>
+        <Image source={icons.close} style={{width:30,height:25}}/>
+      </TouchableOpacity>
+      </View>
+      
+      <View style={{left:-120,top:20,position:'relative',alignContent:'flex-start',fontWeight:'bold'}}>
+      <Text>Cash</Text>  
+      </View>
+      
+      <View style={{flex:1,alignItems:'center',flexDirection:'row',paddingLeft:20,marginTop:30}}>
+        <Image source={icons.cash1} style={{width:50,height:30}}/>
+        <Text style={{paddingLeft:30,fontSize:15,marginRight:40}}>Collect from Pick-up</Text>
+        <CheckBox />
+      </View>
+
+      <View style={{flex:1,alignItems:'center',flexDirection:'row',marginBottom:110,marginTop:10}}>
+        <Image source={icons.cash1} style={{width:50,height:30,paddingRight:30}}/>
+        <Text style={{fontSize:15,marginLeft:10}}>Collect from Drop-off</Text>
+        <CheckBox />
+      </View>
+      <View style={{
+        top:-80,
+        borderStyle: 'dashed',
+        marginLeft:5,
+        marginRight:5,
+        width:width,
+        borderBottomWidth:2,
+        borderColor:'#777777',}}/>
+        <View style={{flexDirection:'row',paddingLeft:20,fontSize:15,marginRight:35,left:-60,top:-50,}}>
+          <Text style={{color:'#777'}}>Subtotal</Text>
+          <Text style={{color:'#777',right:-130}}>2222 lak</Text>
+        </View>
+        <View style={{flexDirection:'row',fontSize:15,justifyContent:'space-between'}}>
+        <Text style={{marginLeft:20,fontSize:20,}}>Total</Text>
+          <Text style={{marginLeft:20,fontSize:20,}}>2222 lak</Text>
+        </View>
+
+
+      <TouchableOpacity
+            style={{paddingBottom:20,paddingRight:30}}
+            onPress={() => this.props.navigation.navigate('OrderDetail')}
+           >
+              <LinearGradient
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                colors={["#2695F8", "#2695F8", "#2695F8"]}
+                style={styles.schedule_button}
+              >
+              <Text style={styles.schedule_txt}>{this.props.lang.place_order}</Text>
+            </LinearGradient>
+            </TouchableOpacity>          
+
+    </Animated.View>
+  </View>
+</Animated.View>
+      
       </Container>
+
+      
+
+      
     );
   }
-
+  
+  handleOpen = () => {
+    console.log('state animation open',this.state.animation)
+    Animated.timing(this.state.animation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+  handleClose = () => {
+    console.log('state animation close',this.state.animation)
+    Animated.timing(this.state.animation, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
   uploadPhoto = async()=>{
     const options = {
       title: 'Select Photo',
@@ -259,3 +409,32 @@ const mapDispatchToProps = dispatch => {
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Summary);
+
+
+const styless = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cover: {
+    backgroundColor: "rgba(0,0,0,.5)",
+  },
+  sheet: {
+    position: "absolute",
+    top: Dimensions.get("window").height,
+    left: 0,
+    right: 0,
+    height: "100%",
+    justifyContent: "flex-end",
+  },
+  popup: {
+    backgroundColor: "#FFF",
+    marginHorizontal: 5,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 400,
+  },
+});

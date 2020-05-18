@@ -9,6 +9,7 @@ export const icons = {
   upload_photo: require("./Iconfiles/upload_photo.png"),
   summary_photo:require("./Iconfiles/summary.png"),
   note:require("./Iconfiles/note.png"),
+  oval:require("./Iconfiles/Oval.png"),
   // Tab bar icon ----------------
   home_pink_outline_50x50: require("./Iconfiles/home_pink_outline_50x50.png"),
   home_gray_outline_50x50: require("./Iconfiles/home_gray_outline_50x50.png"),
@@ -18,6 +19,8 @@ export const icons = {
   cart_org_outline_42: require("./Iconfiles/cart/cart_org_outline_42.png"),
   cart_add_org_fill_50: require("./Iconfiles/cart/cart_add_org_fill_50.png"),
   cloths: require("./Iconfiles/cloths.png"),
+  cash1: require("./Iconfiles/cash1.png"),
+  close: require("./Iconfiles/close.png"),
 
   // connection
   connection_failed_gray_100: require("./Iconfiles/connection/connection_failed_gray_100.png"),

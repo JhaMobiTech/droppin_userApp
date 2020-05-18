@@ -106,6 +106,7 @@ import BannerDetail from "./../components/banner/BannerDetail";
 
 import DropShip from '../components/DropShip/DropShip'
 import Summary from '../components/DropShip/Summary'
+import OrderDetail from '../components/DropShip/OrderDetail'
 const AppNavigator = createStackNavigator(
   {
     // Onboarding
@@ -213,6 +214,7 @@ const AppNavigator = createStackNavigator(
     //Dropship
     DropShip:DropShip,
     Summary:Summary,
+    OrderDetail:OrderDetail,
   },
   {
     initialRouteName: "LoadingData",

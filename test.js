@@ -1,94 +1,130 @@
-import React, {useState} from 'react';
-import {View, Button, Platform} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Image } from 'react-native'
-
-import ImagePicker from 'react-native-image-picker';
-const App = () => {
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
-  const [avatarSource, setAvatarSource] = useState('');
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios');
-    setDate(currentDate);
+import React from "react";
+import { StyleSheet, Text, View, Image, TouchableOpacity, Animated, Dimensions } from "react-native";
+import Scroller from "./Scroller";
+import { icons } from "./src/assets/icons/IconsConfig";
+import CheckBox from '@react-native-community/checkbox'
+export default class App extends React.Component {
+  state = {
+    animation: new Animated.Value(0),
   };
-
-  const showMode = currentMode => {
-    setShow(true);
-    setMode(currentMode);
+  handleOpen = () => {
+    console.log('state animation open',this.state.animation)
+    Animated.timing(this.state.animation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   };
-
-  const showDatepicker = () => {
-    showMode('date');
+  handleClose = () => {
+    console.log('state animation close',this.state.animation)
+    Animated.timing(this.state.animation, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
   };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
-
-  const uploadPhoto = ()=>{
-   // More info on all the options is below in the API Reference... just some common use cases shown here
-    const options = {
-      title: 'Select Avatar',
-      customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
+  render() {
+    const screenHeight = Dimensions.get("window").height;
+    const { width, height } = Dimensions.get("screen");
+    const backdrop = {
+      transform: [
+        {
+          translateY: this.state.animation.interpolate({
+            inputRange: [0, 0.01],
+            outputRange: [screenHeight, 0],
+            extrapolate: "clamp",
+          }),
+        },
+      ],
+      opacity: this.state.animation.interpolate({
+        inputRange: [0.01, 0.5],
+        outputRange: [0, 1],
+        extrapolate: "clamp",
+      }),
     };
-    
-    /**
-     * The first arg is the options object for customization (it can also be null or omitted for default options),
-     * The second arg is the callback which sends object: response (more info in the API Reference)
-     */
-    // ImagePicker.showImagePicker(options, (response) => {
-    //   console.log('Response = ', response);
-    
-    //   if (response.didCancel) {
-    //     console.log('User cancelled image picker');
-    //   } else if (response.error) {
-    //     console.log('ImagePicker Error: ', response.error);
-    //   } else if (response.customButton) {
-    //     console.log('User tapped custom button: ', response.customButton);
-    //   } else {
-    //     const source = { uri: response.uri };
-    //     setAvatarSource(source);
-    //     // You can also display the image using data:
-    //     // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-    
-    //   }
-    // });
+
+    const slideUp = {
+      transform: [
+        {
+          translateY: this.state.animation.interpolate({
+            inputRange: [0.01, 1],
+            outputRange: [0, -1 * screenHeight],
+            extrapolate: "clamp",
+          }),
+        },
+      ],
+    };
+
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={this.handleOpen}>
+          <Text>Open</Text>
+        </TouchableOpacity>
+
+        <Animated.View style={[StyleSheet.absoluteFill, styles.cover, backdrop]}>
+          <View style={[styles.sheet]}>
+            <Animated.View style={[styles.popup, slideUp]}>
+              <Text style={{alignItems:'center',fontSize:22,marginTop:10}}>Payment Method</Text>
+              <Text style={{left:30,top:50,position:'absolute',alignContent:'flex-start',fontWeight:'bold'}}>Cash</Text>
+              <View style={{flex:1,alignItems:'center',flexDirection:'row',left:-15,top:-25}}>
+                <Image source={icons.cash1} style={{width:50,height:30}}/>
+                <Text style={{paddingLeft:20,fontSize:15,marginRight:40}}>Collect from Pick-up</Text>
+                <CheckBox />
+              </View>
+
+              <View style={{flex:1,alignItems:'center',flexDirection:'row',left:-15,top:-140}}>
+                <Image source={icons.cash1} style={{width:50,height:30}}/>
+                <Text style={{paddingLeft:20,fontSize:15,marginRight:35}}>Collect from Drop-off</Text>
+                <CheckBox />
+              </View>
+              <View style={{
+                top:-180,
+                borderStyle: 'dashed',
+                marginLeft:5,
+                marginRight:5,
+                width:width,
+                borderBottomWidth:2,
+                borderColor:'#777777',}}/>
+              <Text style={{paddingLeft:20,fontSize:15,marginRight:35,left:-120,top:-190}}>Subtotal</Text>
+              <Text style={{paddingLeft:20,fontSize:15,marginRight:35,right:-120,top:-210}}>2222 lak</Text>
+
+              
+
+              <TouchableOpacity onPress={this.handleClose}>
+                <Text>Close</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </View>
+        </Animated.View>
+      </View>
+    );
   }
-  return (
-    <View>
-      <View style={{flex:1,alignItems:'center',padding:20}}>
-        <Button onPress={showDatepicker} title="Show date picker!" />
-      </View>
-      <View style={{flex:1,alignItems:'center',padding:20}}>
-        <Button onPress={showTimepicker} title="Show time picker!" />
-      </View>
-      <View style={{flex:1,alignItems:'center',padding:20}}>
-        <Button onPress={uploadPhoto} title="upload photo" />
-      </View>
-      
-      {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          timeZoneOffsetInMinutes={0}
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
-        />
-      )}
+}
 
-    <Image source={avatarSource} style={{width:50,height:50}} />
-      
-    </View>
-  );
-};
-
-export default App;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cover: {
+    backgroundColor: "rgba(0,0,0,.5)",
+  },
+  sheet: {
+    position: "absolute",
+    top: Dimensions.get("window").height,
+    left: 0,
+    right: 0,
+    height: "100%",
+    justifyContent: "flex-end",
+  },
+  popup: {
+    backgroundColor: "#FFF",
+    marginHorizontal: 5,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 400,
+  },
+});

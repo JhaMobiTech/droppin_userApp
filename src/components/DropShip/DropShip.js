@@ -12,8 +12,10 @@ import {
   Image,
   TouchableOpacity,
   StatusBar,
+  YellowBox,
   TextInput,
   ScrollView,
+  FlatList,
   SafeAreaView,
   Platform,
   Alert
@@ -38,12 +40,19 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImagePicker from 'react-native-image-picker';
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import dbhelper from '../../database/dbHelper'
+
 const resetAction = StackActions.reset({
   index: 0,
   actions: [NavigationActions.navigate({ routeName: "TabNavigator" })]
 });
 // API ------
 import { url, ads } from "./../../apis/Url";
+
+YellowBox.ignoreWarnings([
+  'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.', // TODO: Remove when fixed
+])
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -57,8 +66,11 @@ class Login extends Component {
       imagePath:null,
       imageName:null,
       isloading: false,
+      showPlacesList:null,
       pickUpAddress: "",
-      dropOffAdress: ""
+      dropOffAdress: "",
+      selected_item:null,
+
     };
   }
   componentDidMount() {
@@ -68,6 +80,7 @@ class Login extends Component {
       }
       StatusBar.setBarStyle("dark-content");
     });
+    dbhelper.openDB();
   }
   componentWillUnmount() {
     this._navListener.remove();
@@ -77,6 +90,7 @@ class Login extends Component {
     const { selected, makedef, onAdd } = this.state;
     return (
       <Container>
+        <ScrollView>
         <Header noShadow={true} style={styles.header}>
           <TouchableOpacity
             activeOpacity={0.8}
@@ -96,6 +110,7 @@ class Login extends Component {
         </Header>
         <Content contentContainerStyle={styles.content}>
           <StatusBar translucent={false} backgroundColor="#fff" />
+          
           {/* ---------- */}
           <Image style={styles.deliveryBoy} source={icons.deliveryBoy} />
           <View style={styles.text_input_container}>
@@ -110,6 +125,47 @@ class Login extends Component {
               autoCapitalize="none"
               onChangeText={txt => this.setState({ pickUpAddress: txt })}
             />
+            {/* <GooglePlacesAutocomplete
+              placeholder='Pick-up Location'
+              minLength={2}
+              autoFocus={false}
+              returnKeyType={'default'}
+              keyboardAppearance={'light'}
+              listViewDisplayed={'auto'}
+              fetchDetails={true}
+              listViewDisplayed={this.state.showPlacesList}
+              textInputProps={{
+                onFocus: () => this.setState({ showPlacesList: true,pickUpAddress:'' })
+              }}
+              onPress={(data, details = null) => {
+                // 'details' is provided when fetchDetails = true
+                console.log('address deta: ',data,'details', details);
+                this.setState({ pickUpAddress: data.description, showPlacesList: false })
+                console.log('pick-up address: '+this.state.pickUpAddress)
+              }}
+              query={{
+                key: 'AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8',
+                language: 'en',
+              }}
+              styles={{
+                textInputContainer: {
+                  backgroundColor: 'rgba(0,0,0,0)',
+                  borderTopWidth: 0,
+                  borderBottomWidth: 0,
+                  
+                },
+                textInput: {
+                  marginLeft: 0,
+                  marginRight: 0,
+                  height: 38,
+                  color: '#5d5d5d',
+                  fontSize: 16,
+                },
+                predefinedPlacesDescription: {
+                  color: '#1faadb',
+                },
+              }}
+            /> */}
           </View>
           <View style={styles.text_input_container}>
           <Image source={icons.dropPlace} style={styles.dropPlace} />
@@ -122,6 +178,49 @@ class Login extends Component {
               autoCapitalize="none"
               onChangeText={txt => this.setState({ dropOffAdress: txt })}
             />
+            {/* <GooglePlacesAutocomplete
+              placeholder='Drop-off Location'
+              minLength={2}
+              autoFocus={false}
+              returnKeyType={'default'}
+              keyboardAppearance={'light'}
+              listViewDisplayed={'auto'}
+              fetchDetails={true}
+              listViewDisplayed={this.state.showPlacesList}
+              textInputProps={{
+                
+                onFocus: () => this.setState({ showPlacesList: true,dropOffAdress:'' })
+                
+              }}
+              onPress={(data, details = null) => {
+                // 'details' is provided when fetchDetails = true
+                console.log('address deta: ',data,'details', details);
+                this.setState({ dropOffAdress: data.description, showPlacesList: false })
+                console.log('drop-off address: '+this.state.dropOffAdress)
+              }}
+              query={{
+                key: 'AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8',
+                language: 'en',
+              }}
+              styles={{
+                textInputContainer: {
+                  backgroundColor: 'rgba(0,0,0,0)',
+                  borderTopWidth: 0,
+                  borderBottomWidth: 0,
+                  
+                },
+                textInput: {
+                  marginLeft: 0,
+                  marginRight: 0,
+                  height: 38,
+                  color: '#5d5d5d',
+                  fontSize: 16,
+                },
+                predefinedPlacesDescription: {
+                  color: '#1faadb',
+                },
+              }}
+            /> */}
           </View>
 
           <View style={styles.v_card_1}>
@@ -132,7 +231,7 @@ class Login extends Component {
                   {this.props.lang.item_details}
                 </Text> */}
             <View style={styles.card_1_item}>
-              <TouchableOpacity style={styles.btn_3_item} onPress={()=> console.log("on document clicked")}>
+              <TouchableOpacity style={styles.btn_3_item} onPress={()=> this.onClickitem('documents')}>
                 <Image style={styles.icon_h} source={icons.documents} />
                 <Text style={styles.txt_name_ic}>
                   {this.props.lang.documents}
@@ -141,7 +240,7 @@ class Login extends Component {
               </TouchableOpacity>
             </View>
             <View style={styles.card_1_item}>
-              <TouchableOpacity style={styles.btn_3_item} onPress={()=> console.log("on food clicked")}>
+              <TouchableOpacity style={styles.btn_3_item} onPress={()=> this.onClickitem('foods')}>
                 <Image style={styles.icon_f} source={icons.foods} />
                 <Text style={styles.txt_name_ic}>
                   {this.props.lang.foods}
@@ -150,7 +249,7 @@ class Login extends Component {
               </TouchableOpacity>
             </View>
             <View style={styles.card_1_item}>
-              <TouchableOpacity style={styles.btn_3_item} onPress={()=> console.log("on cloths clicked")}>
+              <TouchableOpacity style={styles.btn_3_item} onPress={()=> this.onClickitem('cloths')}>
                 <Image style={styles.icon_co} source={icons.cloths} />
                 <Text style={styles.txt_name_ic}>
                   {this.props.lang.cloths}
@@ -159,7 +258,7 @@ class Login extends Component {
               </TouchableOpacity>
             </View>
             <View style={styles.card_1_item}>
-              <TouchableOpacity style={styles.btn_3_item} onPress={()=> console.log("on more clicked")}>
+              <TouchableOpacity style={styles.btn_3_item} onPress={()=> this.onClickitem('more')}>
                 <Image style={styles.icon_co} source={icons.more} />
                 <Text style={styles.txt_name_ic}>
                   {this.props.lang.more}
@@ -184,7 +283,19 @@ class Login extends Component {
                   {this.props.lang.upload_photo}
                   </Text>
               </TouchableOpacity>
+              
             </View>
+            {this.state.imagePath &&(
+              <View style={{}}>
+              <Image style={{width:100,height:80,marginRight:30,marginTop:10}} source={this.state.imagePath} />
+  
+              <TouchableOpacity style={styles.btn_3_item} onPress={()=>this.resetPhoto()}>
+                  <Image style={styles.icon_reset} source={icons.close} />
+                  
+                </TouchableOpacity>
+                </View>
+            )}
+            
           </Card> 
         </View>
 
@@ -208,9 +319,9 @@ class Login extends Component {
             </TouchableOpacity>
 
             <TouchableOpacity
-            style={styles.deliver_touch}
-            onPress={() =>  this.deliverNow()}
-           >
+                style={styles.deliver_touch}
+                onPress={() =>  this.deliverNow()}
+              >
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -265,9 +376,53 @@ class Login extends Component {
       )}
 
           {SimpleLoading(this.props.proccess == "loading" ? true : false)}
+          
         </Content>
+        </ScrollView>
       </Container>
     );
+  }
+
+  resetPhoto=()=>{
+    this.setState({imageName:null,imagePath:null})
+  }
+  onClickitem =(item)=>{
+    this.setState({selected_item:item})
+
+    // let orderDetail = {};
+
+    // orderDetail.customer_id=123
+    // orderDetail.driver_id=253,
+    // orderDetail.pick_up_loc_lat_Ing=16.8524,
+    // orderDetail.drop_off_loc_lat_Ing=74.5856,
+    // orderDetail.pick_up_loc='a/p sangli,near vishram chowk,416415',
+    // orderDetail.drop_off_loc='a/p sangli,near puskraj chowk,416416',
+    // orderDetail.item_id=12,
+    // orderDetail.item_pics='/d/dds/dsd/dsd/s/png.png',
+    // orderDetail.price =525,
+    // orderDetail.pick_up_time='27/08/2020',
+    // orderDetail.pick_up_date='05:20:10 AM',
+    // orderDetail.delivery_date='27/08/2020',
+    // orderDetail.delivery_time='05:20:10 AM',
+    // orderDetail.driver_note='falt no 508',
+    // orderDetail.sender_name='shivam',
+    // orderDetail.sender_phone=986598598,
+    // orderDetail.receiver_name='sham',
+    // orderDetail.receiver_phone=4578457845,
+    // orderDetail.cash_paymen_method="collect from -drop-off",
+    // orderDetail.driver_name='kiran',
+    // orderDetail.distance_travelled='20',
+    // orderDetail.driver_phone=9865986589,
+    // orderDetail.is_active=true,
+    // orderDetail.created_date='12/02/2020',
+    // orderDetail.order_date='27/08020',
+    // orderDetail.driver_rating=4.5    
+    
+
+    // dbhelper.insertRowIndrop_ship_order(orderDetail);
+    // dbhelper.getAllOrderDetails()
+    // dbhelper.getAllPendingRecords()
+
   }
   uploadPhoto = ()=>{
  
@@ -294,11 +449,15 @@ class Login extends Component {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
+        
+        const source={uri:response.uri}
+        const fileName={file:response.fileName}
+        console.log('response: ',source)
         this.setState({
-          imagePath: response.uri,
-          imageName:response.fileName,
+          imagePath: source,
+          imageName:fileName,
         });
-        console.log('uri and file name: ',response.uri,response.fileName)
+        console.log('uri and file name: ',source,fileName)
       }
     });
 
@@ -330,7 +489,13 @@ class Login extends Component {
   }
 
   deliverNow =()=>{
-    this.props.navigation.navigate('Summary')
+    this.props.navigation.navigate('Summary', {
+      pickUpAddress:this.state.pickUpAddress,
+      dropOffAdress:this.state.dropOffAdress,
+      selected_item:this.state.selected_item,
+      imagePath: this.state.imagePath,
+      
+    });
   }
 
 

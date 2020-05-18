@@ -180,6 +180,7 @@
   "order_missing": "My Order had missing",
   "order_was_damaged": "My order was damaged",
   "out_of_stock": "Currently out of stock",
+  "order_detail":"Order Detail",
 
   "product_is_on_the_way": "Product is now on the way for delivery",
   "product_is_ready_to_delivery": "Product is ready for delivery",
@@ -213,6 +214,7 @@
   "please_go_login": "Please login to create address !",
   "profile": "Profile",
   "pick_up_location":"Pick-up Location",
+  "place_order":"Place Order",
 
   "quantity": "Quantity",
   "quickly_login_with": "Quickly login with",

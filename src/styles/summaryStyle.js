@@ -1,5 +1,6 @@
 import { StyleSheet, Dimensions, Platform, StatusBar } from "react-native";
 import { fonts } from "../assets/fonts/fontConfig";
+import { Container } from "native-base";
 const { width, height } = Dimensions.get("screen");
 export const styles = StyleSheet.create({
   mask:{
@@ -232,6 +233,96 @@ export const styles = StyleSheet.create({
     paddingLeft:10,
   },
 
+  recipient_number_input_txt:{
+
+    flexDirection: 'row',
+    paddingLeft:5,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    marginLeft:3,
+    height: 40,
+    borderRadius: 5,
+    top:'83%',
+    left:'-385%',
+    width: 130,
+    color: "#000",
+    borderColor: '#777',
+  },
+  recipient_name_input_txt:{
+
+    flexDirection: 'row',
+    paddingLeft:5,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    height: 40,
+    borderRadius: 5,
+    top:'83%',
+    left:'-385%',
+    width: 130,
+    color: "#000",
+    borderColor: '#777',
+  },
+  recipient_name_input:{
+    position: 'relative',
+    left:'-303.5%',    
+    top:'75%',
+    fontSize:13,
+    color:'#000',
+
+  },
+  recipient_number_input:{
+    position: 'relative',
+    left:'-278%',    
+    top:'76%',
+    fontSize:13,
+    color:'#000'
+  },
+  number_input:{
+    position: 'relative',
+    left:'-59%',
+    top:'-37%',
+    fontSize:13,
+    color:'#000'
+  },
+  name_input:{
+    position: 'relative',
+    left:'-84%',    
+    top:'-80%',
+    fontSize:13,
+    color:'#000'
+  },
+  name_container:{
+    alignItems:'center',
+    flexDirection:'row',
+  },
+  sm_number_input_container:{
+    flexDirection: 'row',
+    paddingLeft:5,
+    backgroundColor: '#fff',
+    borderWidth: 0.5,
+    height: 40,
+    borderRadius: 5,
+    top:'44%',
+    right:'137%',
+    width: 130,
+    color: "#000",
+    borderColor: 'gray',
+    borderWidth: 1,
+  },
+  sm_name_input_container:{
+    flexDirection: 'row',
+    paddingLeft:5,
+    backgroundColor: '#fff',
+    borderWidth: 0.5,
+    height: 40,
+    borderRadius: 5,
+    top:'44%',
+    right:'138%',
+    width: 130,
+    color: "#000",
+    borderColor: 'gray',
+    borderWidth: 1,
+  },
   sm_note_input_container: {
     flexDirection: 'row',
     
@@ -308,7 +399,7 @@ export const styles = StyleSheet.create({
   sm_vertical_line:{
     top:'5%',
     borderStyle: 'solid',
-    height:200,
+    height:170,
     borderLeftWidth:2,
     borderColor:'#2695F8',
   },
@@ -417,6 +508,25 @@ export const styles = StyleSheet.create({
     paddingRight:120
     
   },
+
+  dropOff_address_label:{
+    flexDirection: 'row',    
+    top:'58%',
+    right:'219.5%',
+    width: 130,
+    color: "#777",
+    fontSize:12,
+
+  },
+  dropOff_address:{
+    flexDirection: 'row',    
+    top:'63%',
+    right:'260%',
+    width: 130,
+    color: "#000",
+    fontSize:15,
+
+  },
   pickUp_address_label:{
     position: 'relative',
     left:'35%',
@@ -438,6 +548,15 @@ export const styles = StyleSheet.create({
     top:'8%',
     fontSize:13,
     color:'#000',
+  },
+
+  recipient_note:{
+    flexDirection: 'row',    
+    top:'69.5%',
+    right:'301%',
+    width: 130,
+    color: "#000",
+    fontSize:15,
   },
 
   quick_container: {
@@ -489,5 +608,21 @@ export const styles = StyleSheet.create({
     color: "#FE6336",
     fontSize: 16,
     marginLeft: 10
+  },
+  button:{
+    display: 'flex',
+    height: 60,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: '#2AC062',
+    shadowColor: '#2AC062',
+    shadowOpacity: 0.5,
+    shadowOffset: { 
+      height: 10, 
+      width: 0 
+    },
+    shadowRadius: 25,
   }
 });
