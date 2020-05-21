@@ -1,130 +1,102 @@
-import React from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity, Animated, Dimensions } from "react-native";
-import Scroller from "./Scroller";
-import { icons } from "./src/assets/icons/IconsConfig";
-import CheckBox from '@react-native-community/checkbox'
+import React from 'react';
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  Text,
+  StatusBar,
+  TextInput,
+} from 'react-native';
+
+import {
+  Header,
+  LearnMoreLinks,
+  Colors,
+  DebugInstructions,
+  ReloadInstructions,
+} from 'react-native/Libraries/NewAppScreen';
+import {PROVIDER_GOOGLE} from 'react-native-maps';
+
+/*This is an Example of React Native Map*/
+import MapView, {Marker} from 'react-native-maps';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+ 
 export default class App extends React.Component {
-  state = {
-    animation: new Animated.Value(0),
-  };
-  handleOpen = () => {
-    console.log('state animation open',this.state.animation)
-    Animated.timing(this.state.animation, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-  handleClose = () => {
-    console.log('state animation close',this.state.animation)
-    Animated.timing(this.state.animation, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  };
+  onRegionChange(region) {
+    this.setState({ region });
+  }
   render() {
-    const screenHeight = Dimensions.get("window").height;
-    const { width, height } = Dimensions.get("screen");
-    const backdrop = {
-      transform: [
-        {
-          translateY: this.state.animation.interpolate({
-            inputRange: [0, 0.01],
-            outputRange: [screenHeight, 0],
-            extrapolate: "clamp",
-          }),
-        },
-      ],
-      opacity: this.state.animation.interpolate({
-        inputRange: [0.01, 0.5],
-        outputRange: [0, 1],
-        extrapolate: "clamp",
-      }),
-    };
-
-    const slideUp = {
-      transform: [
-        {
-          translateY: this.state.animation.interpolate({
-            inputRange: [0.01, 1],
-            outputRange: [0, -1 * screenHeight],
-            extrapolate: "clamp",
-          }),
-        },
-      ],
-    };
-
+    var mapStyle=[{"elementType": "geometry", "stylers": [{"color": "#242f3e"}]},{"elementType": "labels.text.fill","stylers": [{"color": "#746855"}]},{"elementType": "labels.text.stroke","stylers": [{"color": "#242f3e"}]},{"featureType": "administrative.locality","elementType": "labels.text.fill","stylers": [{"color": "#d59563"}]},{"featureType": "poi","elementType": "labels.text.fill","stylers": [{"color": "#d59563"}]},{"featureType": "poi.park","elementType": "geometry","stylers": [{"color": "#263c3f"}]},{"featureType": "poi.park","elementType": "labels.text.fill","stylers": [{"color": "#6b9a76"}]},{"featureType": "road","elementType": "geometry","stylers": [{"color": "#38414e"}]},{"featureType": "road","elementType": "geometry.stroke","stylers": [{"color": "#212a37"}]},{"featureType": "road","elementType": "labels.text.fill","stylers": [{"color": "#9ca5b3"}]},{"featureType": "road.highway","elementType": "geometry","stylers": [{"color": "#746855"}]},{"featureType": "road.highway","elementType": "geometry.stroke","stylers": [{"color": "#1f2835"}]},{"featureType": "road.highway","elementType": "labels.text.fill","stylers": [{"color": "#f3d19c"}]},{"featureType": "transit","elementType": "geometry","stylers": [{"color": "#2f3948"}]},{"featureType": "transit.station","elementType": "labels.text.fill","stylers": [{"color": "#d59563"}]},{"featureType": "water","elementType": "geometry","stylers": [{"color": "#17263c"}]},{"featureType": "water","elementType": "labels.text.fill","stylers": [{"color": "#515c6d"}]},{"featureType": "water","elementType": "labels.text.stroke","stylers": [{"color": "#17263c"}]}];
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={this.handleOpen}>
-          <Text>Open</Text>
-        </TouchableOpacity>
-
-        <Animated.View style={[StyleSheet.absoluteFill, styles.cover, backdrop]}>
-          <View style={[styles.sheet]}>
-            <Animated.View style={[styles.popup, slideUp]}>
-              <Text style={{alignItems:'center',fontSize:22,marginTop:10}}>Payment Method</Text>
-              <Text style={{left:30,top:50,position:'absolute',alignContent:'flex-start',fontWeight:'bold'}}>Cash</Text>
-              <View style={{flex:1,alignItems:'center',flexDirection:'row',left:-15,top:-25}}>
-                <Image source={icons.cash1} style={{width:50,height:30}}/>
-                <Text style={{paddingLeft:20,fontSize:15,marginRight:40}}>Collect from Pick-up</Text>
-                <CheckBox />
-              </View>
-
-              <View style={{flex:1,alignItems:'center',flexDirection:'row',left:-15,top:-140}}>
-                <Image source={icons.cash1} style={{width:50,height:30}}/>
-                <Text style={{paddingLeft:20,fontSize:15,marginRight:35}}>Collect from Drop-off</Text>
-                <CheckBox />
-              </View>
-              <View style={{
-                top:-180,
-                borderStyle: 'dashed',
-                marginLeft:5,
-                marginRight:5,
-                width:width,
-                borderBottomWidth:2,
-                borderColor:'#777777',}}/>
-              <Text style={{paddingLeft:20,fontSize:15,marginRight:35,left:-120,top:-190}}>Subtotal</Text>
-              <Text style={{paddingLeft:20,fontSize:15,marginRight:35,right:-120,top:-210}}>2222 lak</Text>
-
-              
-
-              <TouchableOpacity onPress={this.handleClose}>
-                <Text>Close</Text>
-              </TouchableOpacity>
-            </Animated.View>
-          </View>
-        </Animated.View>
+        <MapView
+        provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          initialRegion={{
+            latitude: 20.5937,
+            longitude: 78.9629,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          customMapStyle={mapStyle}
+          showsUserLocation = {true}
+        >
+          <Marker
+            draggable
+            coordinate={{
+              latitude: 20.5937,
+              longitude: 78.9629,
+            }}
+            onDragEnd={(e) => alert(JSON.stringify(e.nativeEvent.coordinate))}
+            title={'Test Marker'}
+            description={'This is a description of the marker'}
+          />
+        </MapView>
       </View>
     );
   }
 }
-
+ 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    position:'absolute',
+    top:0,
+    left:0,
+    right:0,
+    bottom:0,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
-  cover: {
-    backgroundColor: "rgba(0,0,0,.5)",
-  },
-  sheet: {
-    position: "absolute",
-    top: Dimensions.get("window").height,
-    left: 0,
-    right: 0,
-    height: "100%",
-    justifyContent: "flex-end",
-  },
-  popup: {
-    backgroundColor: "#FFF",
-    marginHorizontal: 5,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 400,
+  map: {
+    position:'absolute',
+    top:0,
+    left:0,
+    right:0,
+    bottom:0,
   },
 });
+
+// const GooglePlacesInput = () => {
+//   return (
+//     <GooglePlacesAutocomplete
+//       placeholder='Search'
+//       fetchDetails = {true}
+//       onPress={(data, details = null) => {
+//         // 'details' is provided when fetchDetails = true
+//         // console.log('data', data);
+//         console.log('details', details.formatted_address);
+//         console.log('lat', details.geometry.location.lat);
+//         console.log('lng', details.geometry.location.lng);
+//       }}
+//       query={{
+//         key: 'AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8',
+//         language: 'en',
+//       }}
+//       currentLocation={true}
+//       currentLocationLabel='Current location'
+//     />
+//   );
+// };
+
+// export default GooglePlacesInput;

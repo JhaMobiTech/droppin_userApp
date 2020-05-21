@@ -73,6 +73,9 @@ class OrderDetail extends Component {
     const { selected, makedef, onAdd } = this.state;
     const { width, height } = Dimensions.get("screen");
 
+    const data = this.props.navigation.getParam('summaryDetails')
+    console.log('data: ',data)
+
     return (
       <Container>
         <Header noShadow={true} style={styles.header}>
@@ -118,20 +121,20 @@ class OrderDetail extends Component {
           </View>
           <View style={{flex:1,right:'0%'}}>
             <Text style={{marginLeft:30,marginTop:-220,color:'#777'}}>{this.props.lang.pick_up_location}</Text>
-            <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{this.props.lang.pick_up_location}</Text>
+            <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.pickUpAddress}</Text>
             <Text style={{marginTop:5,marginLeft:30,fontSize:15,color:'#777'}}>Note to driver</Text>
-            <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>fourth floor, ching resturant 7878 45 54 45 45  45 45 5487878</Text>
+            <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.driverNote}</Text>
             <Text style={{marginTop:5,marginLeft:30,fontSize:15,color:'#777'}}>Contact</Text>
-            <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>john, 897589568</Text>
+                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.driverName},{data.driverPhone}</Text>
             <Text style={{marginTop:5,marginLeft:30,fontSize:15,color:'#777'}}>Drop-off Location</Text>
-            <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>fourth floor, flat no 508</Text>
+                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.dropOffAdress}</Text>
             <Text style={{marginTop:5,marginLeft:30,fontSize:15,color:'#777'}}>Recipient Contact</Text>
-            <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>john, 897589568</Text>
+                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.recipientName},{data.recipientPhone}</Text>
           </View>
           <View  style={{color:'#000',borderBottomWidth:1,margin:10}}/>
           
           <Text style={{marginLeft:30,fontSize:15,color:'#000',fontSize:18}}>Item Details</Text>
-          <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>Foods</Text>
+                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.selected_item}</Text>
           <View  style={{color:'#000',borderBottomWidth:1,margin:10}}/>
           <View style={{flex:1,flexDirection:'row'}}>
           <Text style={{marginTop:5,marginLeft:30,fontSize:15,justifyContent:'flex-start'}}>Subtotal</Text>

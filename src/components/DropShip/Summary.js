@@ -55,9 +55,24 @@ class Summary extends Component {
     this.state = {
       modalVisible:false,
       animation: new Animated.Value(0),
+      driverNote:null,
+      driverName:null,
+      driverPhone:null,
+      recipientName:null,
+      recipientPhone:null,
     };
   }
   componentDidMount() {
+    // let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    // let d = new Date(this.props.navigation.getParam('deliverDate'));
+    // let dayName = days[d.getDay()];
+
+    // let monthName = d.toLocaleString('default', { month: 'long' });
+    // let customDate=dayName+' '+d.getDate() + " "+ monthName;
+    // console.log("date: ",customDate);
+
+
+
     this._navListener = this.props.navigation.addListener("didFocus", () => {
       if (Platform.OS == "android") {
         StatusBar.setTranslucent(false);
@@ -72,7 +87,7 @@ class Summary extends Component {
     const { goBack } = this.props.navigation;
     const { selected, makedef, onAdd } = this.state;
     const { width, height } = Dimensions.get("screen");
-
+    const {getParam} =  this.props.navigation
     const screenHeight = Dimensions.get("window").height;
     const backdrop = {
       transform: [
@@ -123,8 +138,8 @@ class Summary extends Component {
           {/* ---------- */}
          
         <View style={styles.mask}>
-        <Text style={styles.schedule_date}>Today</Text>
-           <Text style={styles.schedule_time}>Now</Text>
+        <Text style={styles.schedule_date}>{this.props.navigation.getParam('deliverDate')}</Text>
+           <Text style={styles.schedule_time}>{this.props.navigation.getParam('deliverTime')}</Text>
            <TouchableOpacity style={styles.change_delivery_time_txt} 
                 onPress={() => console.log()}>
                 <Text style={styles.change_delivery_time_txt}>
@@ -150,7 +165,7 @@ class Summary extends Component {
           </View>
           <View style={{alignItems:'center',flexDirection:'column'}}>
             <Text style={styles.pickUp_address_label}>{this.props.lang.pick_up_location}</Text>
-              <Text style={styles.pickUp_address}>{this.props.lang.pick_up_location}</Text>
+              <Text style={styles.pickUp_address}>{this.props.navigation.getParam('pickUpAddress')}</Text>
                 <Text style={styles.pickUp_driver_note}>Note to driver</Text>
           </View>
           <View style={styles.sm_note_input_container}>
@@ -162,6 +177,7 @@ class Summary extends Component {
                 style={{ flex: 1 }}
                 placeholder="Note to driver"
                 underlineColorAndroid="transparent"
+                onChangeText={(note)=>this.setState({driverNote:note})}
               />
           </View>
           <View style={styles.name_container}>
@@ -177,6 +193,7 @@ class Summary extends Component {
                 style={{ flex: 1 }}
                 placeholder="Name"
                 underlineColorAndroid="transparent"
+                onChangeText={(name)=>this.setState({driverName:name})}
               />
           </View>
           <View style={styles.sm_number_input_container}>
@@ -184,11 +201,12 @@ class Summary extends Component {
                 style={{ flex: 1 }}
                 placeholder="Phone number"
                 underlineColorAndroid="transparent"
-              />
+                onChangeText={(phone)=>this.setState({driverPhone:phone})}
+                />
           </View>
           
             <Text style={styles.dropOff_address_label}>{this.props.lang.dropPlace}</Text>
-            <Text style={styles.dropOff_address}>{this.props.lang.dropPlace}</Text>
+            <Text style={styles.dropOff_address}>{this.props.navigation.getParam('dropOffAdress')}</Text>
             <Text style={styles.recipient_note}>Recipient Detail</Text>
 
 
@@ -202,6 +220,7 @@ class Summary extends Component {
                 style={{ flex: 1 }}
                 placeholder="Name"
                 underlineColorAndroid="transparent"
+                onChangeText={(name)=>this.setState({recipientName :name})}
               />
           </View>
           <View style={styles.recipient_number_input_txt}>
@@ -209,6 +228,7 @@ class Summary extends Component {
                 style={{ flex: 1 }}
                 placeholder="Phone number"
                 underlineColorAndroid="transparent"
+                onChangeText={(phone)=>this.setState({recipientPhone:phone})}
               />
           </View>
 
@@ -292,7 +312,7 @@ class Summary extends Component {
 
       <TouchableOpacity
             style={{paddingBottom:20,paddingRight:30}}
-            onPress={() => this.props.navigation.navigate('OrderDetail')}
+            onPress={() => this.navigateToOrderDetail()}
            >
               <LinearGradient
                 start={{ x: 0, y: 0 }}
@@ -317,6 +337,20 @@ class Summary extends Component {
   }
   
   handleOpen = () => {
+    console.log(
+      'driverNote: '+this.state.driverNote+
+      'driverName: '+this.state.driverPhone+
+      'driverPhone: '+this.state.driverPhone+
+      'recipientName: '+this.state.recipientName+
+      'recipientPhone: '+this.state.recipientPhone)
+    console.log('pickUpAddress: '+this.props.navigation.getParam('pickUpAddress'))
+    console.log('dropOffAdress: '+this.props.navigation.getParam('dropOffAdress'))
+    console.log('selected_item: '+this.props.navigation.getParam('selected_item'))
+    console.log('imagePath: '+this.props.navigation.getParam('imagePath'))
+    console.log('imagePath: '+this.props.navigation.getParam('imagePath'))
+    console.log('deliverDate: '+this.props.navigation.getParam('deliverDate'))
+    console.log('deliverTime: '+this.props.navigation.getParam('deliverTime'))
+      
     console.log('state animation open',this.state.animation)
     Animated.timing(this.state.animation, {
       toValue: 1,
@@ -324,6 +358,29 @@ class Summary extends Component {
       useNativeDriver: true,
     }).start();
   };
+
+
+
+  navigateToOrderDetail = ()=>{
+
+    let summaryDetails ={
+      driverNote:this.state.driverNote,
+      driverName:this.state.driverName,
+      driverPhone:this.state.driverPhone,
+      recipientName:this.state.recipientName,
+      recipientPhone:this.state.recipientPhone,
+      pickUpAddress:this.props.navigation.getParam('pickUpAddress'),
+      dropOffAdress:this.props.navigation.getParam('dropOffAdress'),
+      selected_item:this.props.navigation.getParam('selected_item'),
+      imagePath:this.props.navigation.getParam('imagePath'),
+      deliverDate:this.props.navigation.getParam('deliverDate'),
+      deliverTime:this.props.navigation.getParam('deliverTime')
+        
+    }
+    this.props.navigation.navigate('OrderDetail', {summaryDetails});
+
+  }
+
   handleClose = () => {
     console.log('state animation close',this.state.animation)
     Animated.timing(this.state.animation, {
@@ -332,58 +389,8 @@ class Summary extends Component {
       useNativeDriver: true,
     }).start();
   };
-  uploadPhoto = async()=>{
-    const options = {
-      title: 'Select Photo',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
+  
 
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
-     
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = { uri: response };
-        console.log('Image path: ', source);
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-     
-        this.setState({
-          photoUri:response.uri,
-          photoName:response.fileName,
-          
-        });
-      }
-    });
-  }
-
-  // date time picker
-
-  scheduleDate = async()=>{
-    await this.setState({show:true})
-    let val = JSON.stringify(this.state.show)
-    //Alert.alert('schedule btn tapped',val);
-    console.log('schedule button tapped')
-    {this.state.show && (
-      <DateTimePicker
-        testID="dateTimePicker"
-        timeZoneOffsetInMinutes={0}
-        value={this.state.date}
-        mode={this.state.mode}
-        is24Hour={true}
-        display="default"
-        onChange={this.onChange()}
-      />
-    )}
-  }
 
   onChange = (event, selectedDate) => {
     const currentDate = selectedDate || this.state.date;
@@ -391,9 +398,6 @@ class Summary extends Component {
     console.log("scheduked date: ",selectedDate)
   };
 
-  deliverNow =()=>{
-    console.log('delive now button tapped')
-  }
 
 }
 const mapStateToProps = state => {

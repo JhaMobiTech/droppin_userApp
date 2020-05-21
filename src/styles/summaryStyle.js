@@ -395,6 +395,7 @@ export const styles = StyleSheet.create({
     alignItems:'center',
     flex:1,
     left:'7.5%',
+    marginRight:20,
   },
   sm_vertical_line:{
     top:'5%',
@@ -537,7 +538,7 @@ export const styles = StyleSheet.create({
   },
   pickUp_address:{
     position: 'relative',
-    left:'44%',
+    left:'10%',
     top:'6%',
     fontSize:15,
     color:'#000',
