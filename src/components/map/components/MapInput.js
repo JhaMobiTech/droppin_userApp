@@ -14,15 +14,16 @@ class MapInput extends React.Component {
                 listViewDisplayed={false}    // true/false/undefined
                 fetchDetails={true}
                 onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true
-                    this.props.notifyChange(details.geometry.location);
+                    this.props.notifyChange(details);
                 }
                 }
 
                 query={{
-                    key: 'YOUR_MAPS_API_KEY',
+                    key: 'AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8',
                     language: 'en'
                 }}
-
+                currentLocation={true}
+                currentLocationLabel='Current Location'
                 nearbyPlacesAPI='GooglePlacesSearch'
                 debounce={300}
             />

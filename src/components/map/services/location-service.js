@@ -1,12 +1,17 @@
 import Geocoder from 'react-native-geocoding';
+import Geolocation from '@react-native-community/geolocation';
 
 export const getLocation = () => {
     return new Promise(
         (resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(
-                (data) => resolve(data.coords),
-                (err) => reject(err)
-            );
+
+        Geolocation.getCurrentPosition(
+            (data) => resolve(data.coords),
+            (err) => reject(err));
+            // navigator.geolocation.getCurrentPosition(
+            //     (data) => resolve(data.coords),
+            //     (err) => reject(err)
+            // );
         }
     );
 }

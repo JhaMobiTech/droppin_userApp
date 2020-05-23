@@ -117,6 +117,8 @@ class Summary extends Component {
         },
       ],
     };
+    const data =this.props.navigation.getParam('data')
+    console.log('data summary: ',data)
     return (
       <Container>
         <Header noShadow={true} style={styles.header}>
@@ -138,8 +140,8 @@ class Summary extends Component {
           {/* ---------- */}
          
         <View style={styles.mask}>
-        <Text style={styles.schedule_date}>{this.props.navigation.getParam('deliverDate')}</Text>
-           <Text style={styles.schedule_time}>{this.props.navigation.getParam('deliverTime')}</Text>
+        <Text style={styles.schedule_date}>{data.deliverDate}</Text>
+           <Text style={styles.schedule_time}>{data.deliverTime}</Text>
            <TouchableOpacity style={styles.change_delivery_time_txt} 
                 onPress={() => console.log()}>
                 <Text style={styles.change_delivery_time_txt}>
@@ -165,7 +167,7 @@ class Summary extends Component {
           </View>
           <View style={{alignItems:'center',flexDirection:'column'}}>
             <Text style={styles.pickUp_address_label}>{this.props.lang.pick_up_location}</Text>
-              <Text style={styles.pickUp_address}>{this.props.navigation.getParam('pickUpAddress')}</Text>
+              <Text style={styles.pickUp_address}>{data.pickUpAddress}</Text>
                 <Text style={styles.pickUp_driver_note}>Note to driver</Text>
           </View>
           <View style={styles.sm_note_input_container}>
@@ -206,7 +208,7 @@ class Summary extends Component {
           </View>
           
             <Text style={styles.dropOff_address_label}>{this.props.lang.dropPlace}</Text>
-            <Text style={styles.dropOff_address}>{this.props.navigation.getParam('dropOffAdress')}</Text>
+            <Text style={styles.dropOff_address}>{data.dropOffAdress}</Text>
             <Text style={styles.recipient_note}>Recipient Detail</Text>
 
 

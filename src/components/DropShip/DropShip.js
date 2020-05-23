@@ -48,6 +48,10 @@ import dbhelper from '../../database/dbHelper'
 
 import RNFS from 'react-native-fs'
 import base64 from 'react-native-base64'
+import {PROVIDER_GOOGLE} from 'react-native-maps';
+import MapContainer from '../map/containers/MapContainer'
+const screenHeight = Dimensions.get("window").height;
+
 const resetAction = StackActions.reset({
   index: 0,
   actions: [NavigationActions.navigate({ routeName: "TabNavigator" })]
@@ -59,12 +63,12 @@ YellowBox.ignoreWarnings([
   'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.',
   'If you are using React Native v0.60.0+ you must follow these instructions to enable currentLocation: https://git.io/Jf4AR'
 ])
-class Login extends Component {
+class DropShip extends Component {
   constructor(props) {
     super(props);
     setActiveProccess(this.props.currentDis, "done");
     this.state = {
-      date:new Date(1598051730000),
+      date:new Date(),
       time:'00.00.00',
       showCalendar:false,
       showClock:false,
@@ -89,9 +93,9 @@ class Login extends Component {
   componentDidMount() {
 
 
-    const distance = this.distance(16.8524, 74.5815,17.0295, 74.6078,'K')
-      this.setState({totalDistance:distance})
-      console.log('distance: ',distance)
+    // const distance = this.distance(16.8524, 74.5815,17.0295, 74.6078,'K')
+    //   this.setState({totalDistance:distance})
+      // console.log('distance: ',distance)
 
     this._navListener = this.props.navigation.addListener("didFocus", () => {
       if (Platform.OS == "android") {
@@ -102,27 +106,7 @@ class Login extends Component {
     dbhelper.openDB();
   }
 
-  distance = async(lat1, lon1, lat2, lon2, unit)=> {
-    if ((lat1 == lat2) && (lon1 == lon2)) {
-      return 0;
-    }
-    else {
-      var radlat1 = Math.PI * lat1/180;
-      var radlat2 = Math.PI * lat2/180;
-      var theta = lon1-lon2;
-      var radtheta = Math.PI * theta/180;
-      var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-      if (dist > 1) {
-        dist = 1;
-      }
-      dist = Math.acos(dist);
-      dist = dist * 180/Math.PI;
-      dist = dist * 60 * 1.1515;
-      if (unit=="K") { dist = dist * 1.609344 }
-      if (unit=="N") { dist = dist * 0.8684 }
-      return dist;
-    }
-  }
+  
   componentWillUnmount() {
     this._navListener.remove();
   }
@@ -130,6 +114,9 @@ class Login extends Component {
     const { goBack } = this.props.navigation;
     const { selected, makedef, onAdd } = this.state;
     const screenHeight = Dimensions.get("window").height;
+    const { width, height } = Dimensions.get("screen");
+    var mapStyle=[{"elementType": "geometry", "stylers": [{"color": "#242f3e"}]},{"elementType": "labels.text.fill","stylers": [{"color": "#746855"}]},{"elementType": "labels.text.stroke","stylers": [{"color": "#242f3e"}]},{"featureType": "administrative.locality","elementType": "labels.text.fill","stylers": [{"color": "#d59563"}]},{"featureType": "poi","elementType": "labels.text.fill","stylers": [{"color": "#d59563"}]},{"featureType": "poi.park","elementType": "geometry","stylers": [{"color": "#263c3f"}]},{"featureType": "poi.park","elementType": "labels.text.fill","stylers": [{"color": "#6b9a76"}]},{"featureType": "road","elementType": "geometry","stylers": [{"color": "#38414e"}]},{"featureType": "road","elementType": "geometry.stroke","stylers": [{"color": "#212a37"}]},{"featureType": "road","elementType": "labels.text.fill","stylers": [{"color": "#9ca5b3"}]},{"featureType": "road.highway","elementType": "geometry","stylers": [{"color": "#746855"}]},{"featureType": "road.highway","elementType": "geometry.stroke","stylers": [{"color": "#1f2835"}]},{"featureType": "road.highway","elementType": "labels.text.fill","stylers": [{"color": "#f3d19c"}]},{"featureType": "transit","elementType": "geometry","stylers": [{"color": "#2f3948"}]},{"featureType": "transit.station","elementType": "labels.text.fill","stylers": [{"color": "#d59563"}]},{"featureType": "water","elementType": "geometry","stylers": [{"color": "#17263c"}]},{"featureType": "water","elementType": "labels.text.fill","stylers": [{"color": "#515c6d"}]},{"featureType": "water","elementType": "labels.text.stroke","stylers": [{"color": "#17263c"}]}];
+    
     const backdrop = {
       transform: [
         {
@@ -183,10 +170,11 @@ class Login extends Component {
           
           {/* ---------- */}
           <Image style={styles.deliveryBoy} source={icons.deliveryBoy} />
+          
           <View style={styles.text_input_container}>
             <Image source={icons.pickUp} style={styles.pickUp} />
           
-            <TextInput
+             <TextInput
               value={this.state.pickUpAddress}
               style={styles.txt_input}
               underlineColorAndroid="transparent"
@@ -194,70 +182,11 @@ class Login extends Component {
               placeholderTextColor="#979899"
               autoCapitalize="none"
               onChangeText={txt => this.setState({ pickUpAddress: txt })}
-              onFocus={()=>this.handleOpen('pickUp')}
-              autoFocus={true}
+              onFocus={()=>this.handleOpen('pickUp')} 
+              
               
             />
-            {/* <GooglePlacesAutocomplete
-              placeholder='Pick-up Location'
-              fetchDetails = {true}
-              onPress={(data, details = null) => {
-                // 'details' is provided when fetchDetails = true
-                // console.log('data', data);
-                console.log('details', details.formatted_address);
-                console.log('lat', details.geometry.location.lat);
-                console.log('lng', details.geometry.location.lng);
-              }}
-              query={{
-                key: 'AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8',
-                language: 'en',
-              }}
-              currentLocation={true}
-              currentLocationLabel='Current location'
-              style={styles.txt_input}
-            /> */}
-            {/* <GooglePlacesAutocomplete
-              placeholder='Pick-up Location'
-              minLength={2}
-              autoFocus={false}
-              returnKeyType={'default'}
-              keyboardAppearance={'light'}
-              listViewDisplayed={'auto'}
-              fetchDetails={true}
-              listViewDisplayed={this.state.showPlacesList}
-              textInputProps={{
-                onFocus: () => this.setState({ showPlacesList: true,pickUpAddress:'' })
-              }}
-              onPress={(data, details = null) => {
-                // 'details' is provided when fetchDetails = true
-                console.log('address deta: ',data,'details', details);
-                this.setState({ pickUpAddress: data.description, showPlacesList: false })
-                console.log('pick-up address: '+this.state.pickUpAddress)
-              }}
-              query={{
-                key: 'AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8',
-                language: 'en',
-              }}
-              styles={{
-                textInputContainer: {
-                  backgroundColor: 'rgba(0,0,0,0)',
-                  borderTopWidth: 0,
-                  borderBottomWidth: 0,
-                  
-                },
-                textInput: {
-                  marginLeft: 0,
-                  marginRight: 0,
-                  height: 38,
-                  color: '#5d5d5d',
-                  fontSize: 16,
-                },
-                predefinedPlacesDescription: {
-                  color: '#1faadb',
-                },
-              }}
-            /> */}
-          </View>
+            </View>
           <View style={styles.text_input_container}>
           <Image source={icons.dropPlace} style={styles.dropPlace} />
             <TextInput
@@ -270,51 +199,7 @@ class Login extends Component {
               onChangeText={txt => this.setState({ dropOffAdress: txt })}
               onFocus={()=>this.handleOpen('dropOff')}
             />
-            
-            {/* <GooglePlacesAutocomplete
-              placeholder='Drop-off Location'
-              minLength={2}
-              autoFocus={false}
-              returnKeyType={'default'}
-              keyboardAppearance={'light'}
-              listViewDisplayed={'auto'}
-              fetchDetails={true}
-              listViewDisplayed={this.state.showPlacesList}
-              textInputProps={{
-                
-                onFocus: () => this.setState({ showPlacesList: true,dropOffAdress:'' })
-                
-              }}
-              onPress={(data, details = null) => {
-                // 'details' is provided when fetchDetails = true
-                console.log('address deta: ',data,'details', details);
-                this.setState({ dropOffAdress: data.description, showPlacesList: false })
-                console.log('drop-off address: '+this.state.dropOffAdress)
-              }}
-              query={{
-                key: 'AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8',
-                language: 'en',
-              }}
-              styles={{
-                textInputContainer: {
-                  backgroundColor: 'rgba(0,0,0,0)',
-                  borderTopWidth: 0,
-                  borderBottomWidth: 0,
-                  
-                },
-                textInput: {
-                  marginLeft: 0,
-                  marginRight: 0,
-                  height: 38,
-                  color: '#5d5d5d',
-                  fontSize: 16,
-                },
-                predefinedPlacesDescription: {
-                  color: '#1faadb',
-                },
-              }}
-            /> */}
-          </View>
+           </View>
 
           <View style={styles.v_card_1}>
               
@@ -473,91 +358,37 @@ class Login extends Component {
         </Content>
         </ScrollView>
             
-        <Animated.View style={[StyleSheet.absoluteFill, styless.cover, backdrop]}>
-          <View style={[styless.sheet]}>
-            <Animated.View style={[styless.popup, slideUp]}>
-              <View style={{flexDirection:'row',alignItems:'center'}}>
-
-              <GooglePlacesAutocomplete
-              placeholder='Enter Location'
-              fetchDetails = {true}
-              autoFocus={true}
-              onPress={(data, details = null) => {
-                
-                console.log('details', details.formatted_address);
-                console.log('lat', details.geometry.location.lat);
-                console.log('lng', details.geometry.location.lng);
-
-                this.saveAddress(details.formatted_address,details.geometry.location.lat,details.geometry.location.lng)
-              }}
-              query={{
-                key: 'AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8',
-                language: 'en',
-              }}
-              currentLocation={true}
-              currentLocationLabel='Current location'
-              style={styles.txt_input}
-            />
-             
-              </View>
-
-              <TouchableOpacity
-                    style={{paddingBottom:20,paddingRight:30}}
-                    onPress={() => this.handleClose()}
-                  >
-                      <LinearGradient
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        colors={["#2695F8", "#2695F8", "#2695F8"]}
-                        style={styles.schedule_button}
-                      >
-                      <Text style={styles.schedule_txt}>Confirm</Text>
-                    </LinearGradient>
-                    </TouchableOpacity>          
-
-            </Animated.View>
-          </View>
-        </Animated.View>
+              
               
       </Container>
     );
   }
-
-  handleClose = () => {
-
-    Animated.timing(this.state.animation, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  };
-  
-  handleOpen = (value) => {
-    this.setState({AddressFor:value})
-    Animated.timing(this.state.animation, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-
-    saveAddress = (loc,lat,lng)=>{
-      if(this.state.AddressFor === 'pickUp'){
-        this.setState({
-          pickUpAddress:loc,
-          pickUpLat:lat,
-          pickUpLng:lng
-
-        })
-      }else{
-        this.setState({
-          dropOffAdress:loc,
-          dropOffLat:lat,
-          dropOffLng:lng
-
-        })
-      }
+  handleOpen =(value)=>{
+    this.props.navigation.navigate('Map',{value})
+  }
+  saveAddress = (details)=>{
+    console.log('Address for',this.state.AddressFor)
+    if(this.state.AddressFor=== 'pickUp'){
+      this.setState({ pickUpAddress: details.formatted_address, 
+        showPlacesList: false,
+        pickUpLat:details.geometry.location.lat,
+        pickUpLng:details.geometry.location.lng })
     }
+    
+    if(this.state.AddressFor === 'dropOff'){
+      this.setState({ dropOffAdress: details.formatted_address, 
+        showPlacesList: false,
+        dropOffLat:details.geometry.location.lat,
+        dropOffLng:details.geometry.location.lng })
+    }
+   
+
+    console.log('details', this.state.pickUpAddress);
+    console.log('lat', this.state.pickUpLat);
+    console.log('lng', this.state.pickUpLng);
+    
+     
+  }
 
   resetPhoto=()=>{
     this.setState({imageName:null,imagePath:null})
@@ -682,14 +513,19 @@ class Login extends Component {
 
     console.log("date: ",customDate);
     console.log("customHours: ",customTime);
-    this.props.navigation.navigate('Summary', {
-      pickUpAddress:this.state.pickUpAddress,
-      dropOffAdress:this.state.dropOffAdress,
-      selected_item:this.state.selected_item,
-      imagePath: this.state.imagePath,
-      deliverDate:customDate,
-      deliverTime:customTime,
-    });
+    const data={}
+    data.pickUpAddress=this.state.pickUpAddress,
+    data.dropOffAdress=this.state.dropOffAdress,
+    data.pickUpLat=this.state.pickUpLat,
+    data.pickUpLng=this.state.pickUpLng,
+    data.dropOffLat=this.state.dropOffLat,
+    data.dropOffLng=this.state.dropOffLng,
+    data.selected_item=this.state.selected_item,
+    data.imagePath= this.state.imagePath,
+    data.deliverDate=customDate,
+    data.deliverTime=customTime,
+
+    this.props.navigation.navigate('Summary', {data});
   }
 
 
@@ -707,7 +543,7 @@ const mapDispatchToProps = dispatch => {
     currentDis: dispatch
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(DropShip);
 
 
 const styless = StyleSheet.create({
@@ -734,6 +570,6 @@ const styless = StyleSheet.create({
     borderTopRightRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 400,
+    minHeight: screenHeight,
   },
 });
