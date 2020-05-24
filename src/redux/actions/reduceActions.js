@@ -36,6 +36,23 @@ const updateCart = data => ({
   data: data
 });
 
+const update_pickup_formatted_address = data => ({
+  type: types.update_pickup_formatted_address,
+  data: data
+});
+
+const update_pickup_latitude = data => ({
+  type: types.update_pickup_latitude,
+  data: data
+});
+
+const update_pickup_longitude = data => ({
+  type: types.update_pickup_longitude,
+  data: data
+});
+
+
+
 export {
   activeLanguage,
   activeUser,
@@ -45,5 +62,8 @@ export {
   defaultAddress,
   deliveryOptions,
   defaultdeliveryOptions,
-  updateCart
+  updateCart,
+  update_pickup_formatted_address,
+  update_pickup_latitude,
+  update_pickup_longitude,
 };

@@ -8,6 +8,7 @@ import {
   setDefaultAddress,
   setDeliveryOptions,
   setDefDeliveryOptions,
+  setDropShipDetails,
   updateCart
 } from "./reducers";
 const rootReducer = combineReducers({
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   setDefaultAddress: setDefaultAddress,
   setDeliveryOptions: setDeliveryOptions,
   setDefDeliveryOptions: setDefDeliveryOptions,
+  setDropShipDetails:setDropShipDetails,
   updateCart: updateCart
 });
 export default rootReducer;

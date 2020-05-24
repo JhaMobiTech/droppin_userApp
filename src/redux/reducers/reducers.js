@@ -16,7 +16,7 @@ const setActiveLanguage = (state = intials.activeLanguage, action) => {
 const setActiveUser = (state = intials.activeUser, action) => {
   switch (action.type) {
     case types.updateUserData:
-      return { ...state, user: action.data };
+      return { ...state, user: action.data }; 
     default:
       return state;
   }
@@ -78,6 +78,19 @@ const updateCart = (state = intials.cartItem, action) => {
   }
 };
 
+const setDropShipDetails = (state = intials.dropShipDetails, action) => {
+  switch (action.type) {
+    case types.update_pickup_formatted_address:
+      return { ...state, pickup_formatted_address: action.data };
+    case types.update_pickup_latitude:
+      return { ...state, pickup_latitude: action.data };
+    case types.update_pickup_longitude:
+      return { ...state, pickup_longitude: action.data };
+    default:
+      return state;
+  }
+};
+
 export {
   setActiveLanguage,
   setActiveUser,
@@ -87,5 +100,6 @@ export {
   setDefaultAddress,
   setDeliveryOptions,
   setDefDeliveryOptions,
+  setDropShipDetails,
   updateCart
 };

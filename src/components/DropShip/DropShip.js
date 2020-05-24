@@ -58,6 +58,7 @@ const resetAction = StackActions.reset({
 });
 // API ------
 import { url, ads } from "./../../apis/Url";
+import { update_pickup_formatted_address } from "../redux/actions/reduceActions";
 
 YellowBox.ignoreWarnings([
   'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.',
@@ -531,16 +532,29 @@ class DropShip extends Component {
 
  
 }
+
+const setDropShipeDetails = (dispatch, status) => {
+  dispatch(activeProccess(status));
+};
+
 const mapStateToProps = state => {
   return {
     lang: state.setActiveLanguage.data,
     curentlang: state.setActiveLanguage.lang,
-    proccess: state.setActiveProccess.proccess
+    proccess: state.setActiveProccess.proccess,
+
+    pickup_formatted_address:state.dropShipDetails.pickup_formatted_address,
+    pickup_latitude:state.dropShipDetails.pickup_latitude,
+    pickup_longitude:state.dropShipDetails.pickup_longitude
+
   };
 };
+
+
 const mapDispatchToProps = dispatch => {
   return {
-    currentDis: dispatch
+    currentDis: dispatch,
+
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(DropShip);
