@@ -1,5 +1,5 @@
 import React from "react";
-import { activeProccess } from "../redux/actions/reduceActions";
+import { activeProccess,updatePickupAddress ,updateDropoffAddress} from "../redux/actions/reduceActions";
 import {
   isStr,
   isArray,
@@ -11,6 +11,19 @@ import { Alert, RefreshControl } from "react-native";
 const setActiveProccess = (dispatch, status) => {
   dispatch(activeProccess(status));
 };
+
+const pickupAddressAction = (dispatch, status) => {
+  dispatch(updatePickupAddress(status));
+};
+
+
+// const dropoffAddressAction = (dispatch, status) => {
+//   dispatch(updateDropoffAddress(status));
+// };
+
+// const setAddressForAction = (dispatch, status) => {
+//   dispatch(addressFor(status));
+// };
 
 const timeoutPromise = (ms, promise, props, message) => {
   return new Promise((resolve, reject) => {
@@ -63,5 +76,9 @@ export {
   timeoutPromise,
   onReload,
   alertOptions,
-  refreshControl
+  refreshControl,
+
+  pickupAddressAction,
+  // dropoffAddressAction,
+  // setAddressForAction
 };

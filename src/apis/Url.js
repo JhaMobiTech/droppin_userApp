@@ -35,5 +35,14 @@ export const url = {
   get_product_by_id: "/d_p/v1/get_product_ByID/",
   get_delivery_option: "/d_p/v1/getDelivery_option",
   get_all_cate: "/d_p/v1/getAllCategory",
-  search_product_by_name: "/d_p/v1/search_product"
+  search_product_by_name: "/d_p/v1/search_product",
+
+
+  // ------------------------- dropship ---------------------
+  
+    dropship_add_order: "/dropship/getorder",
+    dropship_get_order: "/dropship/addorder",
+    dropship_get_driver: "/dropship/driver",
+  
+
 };

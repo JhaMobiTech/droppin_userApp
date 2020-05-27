@@ -36,21 +36,55 @@ const updateCart = data => ({
   data: data
 });
 
-const update_pickup_formatted_address = data => ({
-  type: types.update_pickup_formatted_address,
+const updatePickupAddress = data => ({
+  type: types.update_pickup_address,
   data: data
 });
 
-const update_pickup_latitude = data => ({
-  type: types.update_pickup_latitude,
+const updateDropoffAddress = data => ({
+  type: types.update_dropoff_address,
   data: data
 });
 
-const update_pickup_longitude = data => ({
-  type: types.update_pickup_longitude,
+const updateAddressFor = data => ({
+  type: types.getAddressFor,
   data: data
 });
 
+const updateDeliveryCost = data => ({
+  type: types.updatePrice,
+  data: data
+});
+
+const updateTotalDistance = data => ({
+  type: types.updateDistance,
+  data: data
+});
+
+const updateDeliveryItem = data =>({
+  type:types.updateDeliveryItem,
+  data:data
+})
+
+const updateImagePath = data =>({
+  type:types.updateImagePath,
+  data:data
+})
+
+const updateDriverDistance = data =>({
+  type:types.updateDriverDistance,
+  data:data
+})
+
+const updateDeliverDate = data =>({
+  type:types.updateDeliverDate,
+  data:data
+})
+
+const updateDeliverTime = data =>({
+  type:types.updateDeliverTime,
+  data:data
+})
 
 
 export {
@@ -63,7 +97,14 @@ export {
   deliveryOptions,
   defaultdeliveryOptions,
   updateCart,
-  update_pickup_formatted_address,
-  update_pickup_latitude,
-  update_pickup_longitude,
+  updatePickupAddress,
+  updateDropoffAddress,
+  updateAddressFor,
+  updateDeliveryCost,
+  updateTotalDistance,
+  updateDeliveryItem,
+  updateImagePath,
+  updateDriverDistance,
+  updateDeliverDate,
+  updateDeliverTime,
 };

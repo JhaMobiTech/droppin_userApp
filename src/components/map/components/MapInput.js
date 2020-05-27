@@ -1,6 +1,8 @@
 import React from 'react';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
+import { connect } from "react-redux";
+
 class MapInput extends React.Component {
 
     render() {
@@ -19,7 +21,7 @@ class MapInput extends React.Component {
                 }
 
                 query={{
-                    key: 'AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8',
+                    key:this.props.lang.google_API_KEY,
                     language: 'en'
                 }}
                 currentLocation={true}
@@ -30,4 +32,20 @@ class MapInput extends React.Component {
         );
     }
 }
-export default MapInput;
+// export default MapInput;
+const mapStateToProps = state => {
+    return {
+      lang: state.setActiveLanguage.data,
+  
+    };
+  };
+  
+  
+  const mapDispatchToProps = dispatch => {
+    return {
+      currentDis: dispatch,
+  
+    };
+  };
+  export default connect(mapStateToProps, mapDispatchToProps)(MapInput);
+  

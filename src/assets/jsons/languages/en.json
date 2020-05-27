@@ -113,7 +113,9 @@
   "go_shopping": "Go Shopping",
   "gender": "Gender",
   "google_API_KEY":"AIzaSyDIZ6k-UKsT6ALVRUlIp21YdSTQL4Y7HH8",
-
+  "google_distance_API":"AIzaSyC3US8ADVe4nOqCoDerq9mYBZxu1p6b6X8",
+  
+  
   "home": "Home",
   "healty_and_beauty": "Health & Beauty",
   "home_appliance": "Home Appliance",

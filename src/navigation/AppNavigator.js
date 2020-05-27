@@ -107,7 +107,7 @@ import BannerDetail from "./../components/banner/BannerDetail";
 import DropShip from '../components/DropShip/DropShip'
 import Summary from '../components/DropShip/Summary'
 import OrderDetail from '../components/DropShip/OrderDetail'
-import Map from './../components/map/'
+import Map from './../components/DropShip/Map'
 const AppNavigator = createStackNavigator(
   {
     // Onboarding

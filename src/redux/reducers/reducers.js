@@ -80,12 +80,26 @@ const updateCart = (state = intials.cartItem, action) => {
 
 const setDropShipDetails = (state = intials.dropShipDetails, action) => {
   switch (action.type) {
-    case types.update_pickup_formatted_address:
+    case types.update_pickup_address:
       return { ...state, pickup_formatted_address: action.data };
-    case types.update_pickup_latitude:
-      return { ...state, pickup_latitude: action.data };
-    case types.update_pickup_longitude:
-      return { ...state, pickup_longitude: action.data };
+    case types.update_dropoff_address:
+      return { ...state, dropoff_formatted_address: action.data };
+    case types.getAddressFor:
+      return { ...state, address_for: action.data };
+    case types.updatePrice:
+      return { ...state, price: action.data };
+    case types.updateDistance:
+      return { ...state, distance: action.data };
+    case types.updateImagePath:
+      return { ...state, imagePath: action.data };
+    case types.updateDeliveryItem:
+      return { ...state, delivery_item: action.data };
+    case types.updateDriverDistance:
+      return { ...state, driverDistance: action.data };
+    case types.updateDeliverDate:
+      return { ...state, deliverDate: action.data };
+    case types.updateDeliverTime:
+      return { ...state, deliverTime: action.data };
     default:
       return state;
   }

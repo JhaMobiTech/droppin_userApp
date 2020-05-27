@@ -26,6 +26,7 @@
     "native-base": "^2.13.12",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-actionsheet": "^2.4.2",
     "react-native-android-location-services-dialog-box": "^2.8.2",
     "react-native-base64": "0.0.2",
     "react-native-camera-kit": "^8.0.4",

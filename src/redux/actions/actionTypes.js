@@ -9,9 +9,15 @@ export const types = {
   udate_def_del_op: "UPDATE_DEF_DEL_OP",
   update_cart: "UPDATE_CART",
 
-  update_pickup_formatted_address:"UPDATE_PICKUP_FORMATTED_ADDRESS",
-  update_pickup_latitude:"UPATE_PICKUP_LATITUDE",
-  update_pickup_longitude:"UPDATE_PICKUP_LATITUDE",
-  
+  update_pickup_address:"UPDATE_PICKUP_ADDRESS",
+  update_dropoff_address:"UPDATE_DROPOFF_ADDRESS",
+  getAddressFor:'GET_ADDRESS_FOR',
 
+  updatePrice:"UPDATE_PRICE",
+  updateDistance:"UPDATE_DISTANCE",
+  updateDeliveryItem:"UPDATE_DELIVERY_ITEM",
+  updateImagePath:"UPDATE_IMAGE_PATH",
+  updateDriverDistance:"UPADATE_DRIVER_DISTANCE",
+  updateDeliverDate:"UPDATE_DELIVER_DATE",
+  updateDeliverTime:"UPDATE_DELIVER_TIME",
 };

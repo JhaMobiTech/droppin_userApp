@@ -1,12 +1,5 @@
 import React, { Component } from "react";
 import {
-  LoginManager,
-  AccessToken,
-  LoginButton,
-  GraphRequest,
-  GraphRequestManager
-} from "react-native-fbsdk";
-import {
   View,
   Text,
   Image,
@@ -39,6 +32,7 @@ import {
   timeoutPromise,
   onReload
 } from "./../../functions/connectionManage";
+import {setAddressForAction,setDeliveryItem,setDeliverTime,setDeliverDate} from '../../functions/dropshipManage'
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImagePicker from 'react-native-image-picker';
@@ -58,7 +52,7 @@ const resetAction = StackActions.reset({
 });
 // API ------
 import { url, ads } from "./../../apis/Url";
-import { update_pickup_formatted_address } from "../redux/actions/reduceActions";
+// import { update_pickup_formatted_address } from "../redux/actions/reduceActions";
 
 YellowBox.ignoreWarnings([
   'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.',
@@ -93,10 +87,12 @@ class DropShip extends Component {
   }
   componentDidMount() {
 
-
-    // const distance = this.distance(16.8524, 74.5815,17.0295, 74.6078,'K')
-    //   this.setState({totalDistance:distance})
-      // console.log('distance: ',distance)
+    requestMultiple([PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE, PERMISSIONS.ANDROID.CAMERA]).then(
+      (statuses) => {
+        console.log('Camera', statuses[PERMISSIONS.ANDROID.CAMERA]);
+        console.log('external storage', statuses[PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE]);
+      },
+    );
 
     this._navListener = this.props.navigation.addListener("didFocus", () => {
       if (Platform.OS == "android") {
@@ -105,6 +101,11 @@ class DropShip extends Component {
       StatusBar.setBarStyle("dark-content");
     });
     dbhelper.openDB();
+
+    // this.getDistanceAndPrice(
+    //   this.props.pickup_formatted_address.lat,this.props.pickup_formatted_addresslng,
+    //   this.props.dropoff_formatted_address.lat,this.props.dropoff_formatted_address.lng);
+    // this.getDistanceAndPrice(this.props.pickUpLat,pickUpLng,this.props.dropOffLat,this.props.dropOffLng)
   }
 
   
@@ -146,6 +147,10 @@ class DropShip extends Component {
         },
       ],
     };
+    console.log('pickup_formatted_address')
+    console.log(this.props.pickup_formatted_address.address)
+    console.log(this.props.pickup_formatted_address.lat)
+    console.log(this.props.pickup_formatted_address.lng)
     return (
       <Container>
         <ScrollView>
@@ -176,14 +181,14 @@ class DropShip extends Component {
             <Image source={icons.pickUp} style={styles.pickUp} />
           
              <TextInput
-              value={this.state.pickUpAddress}
+              value={this.props.pickup_formatted_address.address}
               style={styles.txt_input}
               underlineColorAndroid="transparent"
               placeholder={`${this.props.lang.pick_up_location}`}
               placeholderTextColor="#979899"
               autoCapitalize="none"
               onChangeText={txt => this.setState({ pickUpAddress: txt })}
-              onFocus={()=>this.handleOpen('pickUp')} 
+             onFocus={()=>this.handleOpen('pickUp')} 
               
               
             />
@@ -191,7 +196,7 @@ class DropShip extends Component {
           <View style={styles.text_input_container}>
           <Image source={icons.dropPlace} style={styles.dropPlace} />
             <TextInput
-              value={this.state.dropOffAdress}
+              value={this.props.dropoff_formatted_address.address}
               style={styles.txt_input}
               underlineColorAndroid="transparent"
               placeholder={`${this.props.lang.dropPlace}`}
@@ -264,12 +269,11 @@ class DropShip extends Component {
               </TouchableOpacity>
               
             </View>
-            {this.state.imagePath &&(
+            {this.state.imagePath!==null &&(
               <View style={{}}>
-              <Image style={{width:100,height:80,marginRight:30,marginTop:10}} source={this.state.imagePath} />
-  
               <TouchableOpacity style={styles.btn_3_item} onPress={()=>this.resetPhoto()}>
-                  <Image style={styles.icon_reset} source={icons.close} />
+              <Image style={{width:100,height:80,marginRight:30}} source={this.state.imagePath} />              
+                  {/* <Image style={styles.icon_reset} source={icons.close} /> */}
                   
                 </TouchableOpacity>
                 </View>
@@ -314,7 +318,7 @@ class DropShip extends Component {
             
 
             </View>
-            <Text style={styles.total_amt_txt}>555Km</Text>
+            <Text style={styles.total_amt_txt}>{this.props.price}LAK</Text>
           </Card>
         </View>
 
@@ -364,8 +368,33 @@ class DropShip extends Component {
       </Container>
     );
   }
+
+  getDistanceAndPrice = async(lat1, lng1, lat2, lng2)=>
+    {
+      if(lat1!==null,lng1!==null,lat2!==null,lng2!==null){
+        const Location1Str = lat1 + "," + lng1;
+        const Location2Str = lat2 + "," + lng2;
+
+        const GOOGLE_API_KEY= 'AIzaSyC3US8ADVe4nOqCoDerq9mYBZxu1p6b6X8'//only for distance calculation
+        let ApiURL = "https://maps.googleapis.com/maps/api/distancematrix/json?";
+        
+        let params = `origins=${Location1Str}&destinations=${Location2Str}&key=${GOOGLE_API_KEY}`; // you need to get a key
+        let finalApiURL = `${ApiURL}${encodeURI(params)}`;
+
+        let fetchResult =  await fetch(finalApiURL); // call API
+        let Result =  await fetchResult.json(); // extract json
+        const km = (Result.rows[0].elements[0].distance.text).substr(0,Result.rows[0].elements[0].distance.text.indexOf(' '));
+        this.setState({distance: km,price: 8000 + km*2000})
+        
+        // console.log(Result)
+        // console.log('total distance: ',Result.rows[0].elements[0].distance.text)
+        // console.log('distance: ',this.state.distance+" price: "+this.state.price)
+
+      }      
+    }
   handleOpen =(value)=>{
-    this.props.navigation.navigate('Map',{value})
+    setAddressForAction(this.props.currentDis,value)
+    this.props.navigation.navigate('Map')
   }
   saveAddress = (details)=>{
     console.log('Address for',this.state.AddressFor)
@@ -480,7 +509,9 @@ class DropShip extends Component {
   }
   onChange = (event, selectedDate) => {
     const currentDate = selectedDate || this.state.date;
-
+    console.log('date format: ',currentDate.toLocaleDateString())
+    console.log('time format: ',currentDate.toLocaleTimeString())
+    setDeliverDate(this.props.currentDis,currentDate)
     if(Platform.OS === 'ios'){
       this.setState({date:currentDate,showIOSCalendar:false})
       this.deliverNow()
@@ -492,60 +523,90 @@ class DropShip extends Component {
   }
   onChangeTime = (event, selectedTime) => {
     const currentTime = selectedTime || this.state.time;
+    setDeliverTime(this.props.currentDis,currentTime)
     this.setState({time:currentTime,showClock:false})
     this.deliverNow()
   }
 
   deliverNow =()=>{
-    let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    let d = new Date(this.state.date);
-    let dayName = days[d.getDay()];
 
-    let monthName = d.toLocaleString('default', { month: 'short' });
-    let customDate=dayName+' '+d.getDate() ;
-    
-    let hours = d.getHours();
-    let minutes = d.getMinutes();
-    let ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0'+minutes : minutes;
-    let customTime = hours + ':' + minutes + ' ' + ampm;
+    if (this.props.pickup_formatted_address.address == "") {
+      Alert.alert(
+        this.props.lang.warning,
+        'Pick-up address is required'
+      );
+    } else if (this.props.dropoff_formatted_address.address == "") {
+      Alert.alert(
+        this.props.lang.warning,
+        'Drop-off address is required'
+      );
+    } else if (this.props.deliveryItem == "") {
+      Alert.alert(
+        this.props.lang.warning,
+        'please select item'
+      );
+    } else if (this.state.imagePath == "") {
+      Alert.alert(
+        this.props.lang.warning,
+        'please upload photo'
+      );
+    }else{
+      setDeliveryItem(this.props.currentDis,this.state.selected_item)
 
-    console.log("date: ",customDate);
-    console.log("customHours: ",customTime);
-    const data={}
-    data.pickUpAddress=this.state.pickUpAddress,
-    data.dropOffAdress=this.state.dropOffAdress,
-    data.pickUpLat=this.state.pickUpLat,
-    data.pickUpLng=this.state.pickUpLng,
-    data.dropOffLat=this.state.dropOffLat,
-    data.dropOffLng=this.state.dropOffLng,
-    data.selected_item=this.state.selected_item,
-    data.imagePath= this.state.imagePath,
-    data.deliverDate=customDate,
-    data.deliverTime=customTime,
+      // setImagePath(this.props.currentDis,this.state.imagePath)
+      
+      let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      let d = new Date(this.state.date);
+      let dayName = days[d.getDay()];
 
-    this.props.navigation.navigate('Summary', {data});
+      let monthName = d.toLocaleString('default', { month: 'short' });
+      let customDate=dayName+' '+d.getDate() ;
+      
+      let hours = d.getHours();
+      let minutes = d.getMinutes();
+      let ampm = hours >= 12 ? 'pm' : 'am';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      let customTime = hours + ':' + minutes + ' ' + ampm;
+
+      console.log("date: ",customDate);
+      console.log("customHours: ",customTime);
+      const data={}
+      data.pickUpAddress=this.state.pickUpAddress,
+      data.dropOffAdress=this.state.dropOffAdress,
+      data.pickUpLat=this.state.pickUpLat,
+      data.pickUpLng=this.state.pickUpLng,
+      data.dropOffLat=this.state.dropOffLat,
+      data.dropOffLng=this.state.dropOffLng,
+      data.selected_item=this.state.selected_item,
+      data.imagePath= this.state.imagePath,
+      data.displaydeliverDate=customDate,
+      data.displaydeliverTime=customTime,
+      data.deliverDate=this.state.date.toLocaleDateString(),
+      data.deliverTime=customTime,
+
+      this.props.navigation.navigate('Summary', {data});
+    }
   }
 
 
  
 }
 
-const setDropShipeDetails = (dispatch, status) => {
-  dispatch(activeProccess(status));
-};
 
 const mapStateToProps = state => {
   return {
     lang: state.setActiveLanguage.data,
     curentlang: state.setActiveLanguage.lang,
     proccess: state.setActiveProccess.proccess,
-
-    pickup_formatted_address:state.dropShipDetails.pickup_formatted_address,
-    pickup_latitude:state.dropShipDetails.pickup_latitude,
-    pickup_longitude:state.dropShipDetails.pickup_longitude
+    
+    pickup_formatted_address:state.setDropShipDetails.pickup_formatted_address,
+    dropoff_formatted_address:state.setDropShipDetails.dropoff_formatted_address,
+    address_for:state.setDropShipDetails.address_for,
+    price:state.setDropShipDetails.price,
+    distance:state.setDropShipDetails.distance,
+    delivery_item:state.setDropShipDetails.delivery_item,
 
   };
 };

@@ -121,24 +121,24 @@ class OrderDetail extends Component {
           </View>
           <View style={{flex:1,right:'0%'}}>
             <Text style={{marginLeft:30,marginTop:-220,color:'#777'}}>{this.props.lang.pick_up_location}</Text>
-            <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.pickUpAddress}</Text>
+            <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{this.props.pickup_formatted_address.address}</Text>
             <Text style={{marginTop:5,marginLeft:30,fontSize:15,color:'#777'}}>Note to driver</Text>
             <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.driverNote}</Text>
             <Text style={{marginTop:5,marginLeft:30,fontSize:15,color:'#777'}}>Contact</Text>
-                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.driverName},{data.driverPhone}</Text>
+                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.senderName},{data.senderPhone}</Text>
             <Text style={{marginTop:5,marginLeft:30,fontSize:15,color:'#777'}}>Drop-off Location</Text>
-                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.dropOffAdress}</Text>
+                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{this.props.dropoff_formatted_address.address}</Text>
             <Text style={{marginTop:5,marginLeft:30,fontSize:15,color:'#777'}}>Recipient Contact</Text>
                 <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.recipientName},{data.recipientPhone}</Text>
           </View>
           <View  style={{color:'#000',borderBottomWidth:1,margin:10}}/>
           
           <Text style={{marginLeft:30,fontSize:15,color:'#000',fontSize:18}}>Item Details</Text>
-                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{data.selected_item}</Text>
+                <Text style={{marginTop:5,marginLeft:30,fontSize:15}}>{this.props.deliveryItem}</Text>
           <View  style={{color:'#000',borderBottomWidth:1,margin:10}}/>
           <View style={{flex:1,flexDirection:'row'}}>
           <Text style={{marginTop:5,marginLeft:30,fontSize:15,justifyContent:'flex-start'}}>Subtotal</Text>
-          <Text style={{marginTop:5,marginLeft:100,fontSize:15,justifyContent:'flex-end'}}>555 LAK</Text>          
+                <Text style={{marginTop:5,marginLeft:100,fontSize:15,justifyContent:'flex-end'}}>{this.props.price}LAK</Text>          
           </View>
 
           <View style={{flex:1,flexDirection:'row'}}>
@@ -148,12 +148,12 @@ class OrderDetail extends Component {
 
           <View style={{flex:1,flexDirection:'row'}}>
           <Text style={{marginTop:5,marginLeft:30,fontSize:15,justifyContent:'flex-start',color:'#000'}}>Total Price</Text>
-          <Text style={{marginTop:5,marginLeft:80,fontSize:15,justifyContent:'flex-end',color:'#000'}}>555 LAK</Text>
+                <Text style={{marginTop:5,marginLeft:80,fontSize:15,justifyContent:'flex-end',color:'#000'}}>{this.props.price}LAK</Text>
           </View>
 
           <View style={{flex:1,flexDirection:'row',backgroundColor:''}}>
           <Image source={icons.cash1} style={{width:50,height:30,marginTop:15,marginLeft:30,justifyContent:'flex-start',}}/>
-          <Text style={{margin:20,fontSize:18,justifyContent:'flex-end',color:'green'}}>Collect from Pick-up</Text>
+                <Text style={{margin:20,fontSize:18,justifyContent:'flex-end',color:'green'}}>{data.collectCashFrom}</Text>
           </View>
 
 
@@ -177,7 +177,12 @@ const mapStateToProps = state => {
   return {
     lang: state.setActiveLanguage.data,
     curentlang: state.setActiveLanguage.lang,
-    proccess: state.setActiveProccess.proccess
+    proccess: state.setActiveProccess.proccess,
+    price:state.setDropShipDetails.price,
+    distance:state.setDropShipDetails.distance,
+    driverDistance:state.setDropShipDetails.driverDistance,
+    pickup_formatted_address:state.setDropShipDetails.pickup_formatted_address,
+    dropoff_formatted_address:state.setDropShipDetails.dropoff_formatted_address,
   };
 };
 const mapDispatchToProps = dispatch => {

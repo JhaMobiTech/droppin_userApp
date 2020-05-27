@@ -33,6 +33,7 @@ import { icons } from "../../assets/icons/IconsConfig";
 import { SimpleLoading } from "./../loadingoverlay/AppLoading";
 import { StackActions, NavigationActions } from "react-navigation";
 import { storeActiveUser, manualLoggin } from "./../../functions/userManage";
+import dbhelper from '../../database/dbHelper'
 import {
   setActiveProccess,
   timeoutPromise,
@@ -48,6 +49,7 @@ const resetAction = StackActions.reset({
 });
 // API ------
 import { url, ads } from "./../../apis/Url";
+import { stat } from "react-native-fs";
 class Summary extends Component {
   constructor(props) {
     super(props);
@@ -56,10 +58,13 @@ class Summary extends Component {
       modalVisible:false,
       animation: new Animated.Value(0),
       driverNote:null,
-      driverName:null,
-      driverPhone:null,
+      senderName:null,
+      senderPhone:null,
       recipientName:null,
       recipientPhone:null,
+      checked1:false,
+      checked2:false,
+      checkboxValue:null,
     };
   }
   componentDidMount() {
@@ -89,6 +94,7 @@ class Summary extends Component {
     const { width, height } = Dimensions.get("screen");
     const {getParam} =  this.props.navigation
     const screenHeight = Dimensions.get("window").height;
+    console.log(this.props.deliverTime,this.props.deliverDate)
     const backdrop = {
       transform: [
         {
@@ -118,8 +124,9 @@ class Summary extends Component {
       ],
     };
     const data =this.props.navigation.getParam('data')
-    console.log('data summary: ',data)
+    // console.log('data summary: ',data)
     return (
+      <SafeAreaView style={{flex: 1}}>
       <Container>
         <Header noShadow={true} style={styles.header}>
           <TouchableOpacity
@@ -140,8 +147,8 @@ class Summary extends Component {
           {/* ---------- */}
          
         <View style={styles.mask}>
-        <Text style={styles.schedule_date}>{data.deliverDate}</Text>
-           <Text style={styles.schedule_time}>{data.deliverTime}</Text>
+        <Text style={styles.schedule_date}>{data.displaydeliverDate}</Text>
+           <Text style={styles.schedule_time}>{data.displaydeliverTime}</Text>
            <TouchableOpacity style={styles.change_delivery_time_txt} 
                 onPress={() => console.log()}>
                 <Text style={styles.change_delivery_time_txt}>
@@ -167,7 +174,7 @@ class Summary extends Component {
           </View>
           <View style={{alignItems:'center',flexDirection:'column'}}>
             <Text style={styles.pickUp_address_label}>{this.props.lang.pick_up_location}</Text>
-              <Text style={styles.pickUp_address}>{data.pickUpAddress}</Text>
+              <Text style={styles.pickUp_address}>{this.props.pickup_formatted_address.address}</Text>
                 <Text style={styles.pickUp_driver_note}>Note to driver</Text>
           </View>
           <View style={styles.sm_note_input_container}>
@@ -176,7 +183,7 @@ class Summary extends Component {
                 style={styles.text_input_image}
               />
               <TextInput
-                style={{ flex: 1 }}
+                style={{ flex: 1,paddingTop:5 }}
                 placeholder="Note to driver"
                 underlineColorAndroid="transparent"
                 onChangeText={(note)=>this.setState({driverNote:note})}
@@ -195,24 +202,26 @@ class Summary extends Component {
                 style={{ flex: 1 }}
                 placeholder="Name"
                 underlineColorAndroid="transparent"
-                onChangeText={(name)=>this.setState({driverName:name})}
+                onChangeText={(name)=>this.setState({senderName:name})}
               />
           </View>
           <View style={styles.sm_number_input_container}>
               <TextInput
                 style={{ flex: 1 }}
                 placeholder="Phone number"
+                keyboardType="numeric"
                 underlineColorAndroid="transparent"
-                onChangeText={(phone)=>this.setState({driverPhone:phone})}
+                onChangeText={(phone)=>this.setState({senderPhone:phone})}
                 />
           </View>
           
             <Text style={styles.dropOff_address_label}>{this.props.lang.dropPlace}</Text>
-            <Text style={styles.dropOff_address}>{data.dropOffAdress}</Text>
-            <Text style={styles.recipient_note}>Recipient Detail</Text>
+            <Text style={styles.dropOff_address}>{this.props.dropoff_formatted_address.address}</Text>
+            
 
 
           <View style={styles.name_container}>
+            <Text style={styles.recipient_note}>Recipient Detail</Text>
             <Text style={styles.recipient_name_input}>Name <Text style={{color:'red'}}>*</Text></Text>
             <Text style={styles.recipient_number_input}>Phone Number <Text style={{color:'red'}}>*</Text></Text>
           </View>
@@ -229,6 +238,7 @@ class Summary extends Component {
               <TextInput
                 style={{ flex: 1 }}
                 placeholder="Phone number"
+                keyboardType="numeric"
                 underlineColorAndroid="transparent"
                 onChangeText={(phone)=>this.setState({recipientPhone:phone})}
               />
@@ -258,7 +268,7 @@ class Summary extends Component {
             </TouchableOpacity>          
 
             </View>
-            <Text style={styles.total_amt_txt}>455 LAK</Text>
+            <Text style={styles.total_amt_txt}>{this.props.price}LAK</Text>
           </Card>
         </View>
         
@@ -286,13 +296,23 @@ class Summary extends Component {
       <View style={{flex:1,alignItems:'center',flexDirection:'row',paddingLeft:20,marginTop:30}}>
         <Image source={icons.cash1} style={{width:50,height:30}}/>
         <Text style={{paddingLeft:30,fontSize:15,marginRight:40}}>Collect from Pick-up</Text>
-        <CheckBox />
+        <CheckBox
+          value={this.state.checked1}
+          onValueChange={() => this.setState({ checked1: !this.state.checked1,
+            checked2: this.state.checked1,
+            checkboxValue:'Collect from pick-up' })}
+        />
       </View>
 
       <View style={{flex:1,alignItems:'center',flexDirection:'row',marginBottom:110,marginTop:10}}>
-        <Image source={icons.cash1} style={{width:50,height:30,paddingRight:30}}/>
+        <Image source={icons.cash1} style={{width:50,height:30,paddingRight:40}}/>
         <Text style={{fontSize:15,marginLeft:10}}>Collect from Drop-off</Text>
-        <CheckBox />
+        <CheckBox
+          value={this.state.checked2}
+          onValueChange={() => this.setState({ checked2: !this.state.checked2,
+            checked1:this.state.checked2,
+            checkboxValue:'Collect from drop-off' })}
+        />
       </View>
       <View style={{
         top:-80,
@@ -304,11 +324,11 @@ class Summary extends Component {
         borderColor:'#777777',}}/>
         <View style={{flexDirection:'row',paddingLeft:20,fontSize:15,marginRight:35,left:-60,top:-50,}}>
           <Text style={{color:'#777'}}>Subtotal</Text>
-          <Text style={{color:'#777',right:-130}}>2222 lak</Text>
+          <Text style={{color:'#777',right:-130}}>{this.props.price}lak</Text>
         </View>
         <View style={{flexDirection:'row',fontSize:15,justifyContent:'space-between'}}>
         <Text style={{marginLeft:20,fontSize:20,}}>Total</Text>
-          <Text style={{marginLeft:20,fontSize:20,}}>2222 lak</Text>
+          <Text style={{marginLeft:20,fontSize:20,}}>{this.props.price}lak</Text>
         </View>
 
 
@@ -332,17 +352,50 @@ class Summary extends Component {
       
       </Container>
 
-      
+      </SafeAreaView>
 
       
     );
   }
   
+  
   handleOpen = () => {
+    if (this.state.driverNote == "") {
+      Alert.alert(
+        this.props.lang.warning,
+        'Driver note is required'
+      );
+    } else if (this.state.senderName == "") {
+      Alert.alert(
+        this.props.lang.warning,
+        'Driver name is required'
+      );
+    } else if (this.state.senderPhone == "") {
+      Alert.alert(
+        this.props.lang.warning,
+        'Driver phone number is required'
+      );
+    } else if (this.state.recipientName == "") {
+      Alert.alert(
+        this.props.lang.warning,
+        'Recipient name is required'
+      );
+    } else if (this.state.recipientPhone == "") {
+      Alert.alert(
+        this.props.lang.warning,
+        'Recipient phone number is required'
+      );
+    }else{
+      Animated.timing(this.state.animation, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
     console.log(
       'driverNote: '+this.state.driverNote+
-      'driverName: '+this.state.driverPhone+
-      'driverPhone: '+this.state.driverPhone+
+      'senderName: '+this.state.senderPhone+
+      'senderPhone: '+this.state.senderPhone+
       'recipientName: '+this.state.recipientName+
       'recipientPhone: '+this.state.recipientPhone)
     console.log('pickUpAddress: '+this.props.navigation.getParam('pickUpAddress'))
@@ -354,35 +407,133 @@ class Summary extends Component {
     console.log('deliverTime: '+this.props.navigation.getParam('deliverTime'))
       
     console.log('state animation open',this.state.animation)
-    Animated.timing(this.state.animation, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
+    
   };
+
+  getDriverDistance = async(lat1, lng1, lat2, lng2)=>
+    {
+      const Location1Str = lat1 + "," + lng1;
+      const Location2Str = lat2 + "," + lng2;
+      
+      let ApiURL = "https://maps.googleapis.com/maps/api/distancematrix/json?";
+      
+       let params = `origins=${Location1Str}&destinations=${Location2Str}&key=${this.props.lang.google_distance_API}`; // you need to get a key
+       let finalApiURL = `${ApiURL}${encodeURI(params)}`;
+
+       let fetchResult =  await fetch(finalApiURL); // call API
+       let Result =  await fetchResult.json(); // extract json
+       const driverDistance = (Result.rows[0].elements[0].distance.text).substr(0,Result.rows[0].elements[0].distance.text.indexOf(' '));
+       setDriverDistance(this.props.currentDis, driverDistance);
+       console.log(Result)
+       console.log('total distance: ',Result.rows[0].elements[0].distance.text)
+       console.log('driverDistance: ',driverDistance)
+      
+    }
 
 
 
   navigateToOrderDetail = ()=>{
+    
+    
+    // fetch('https://mywebsite.com/mydata.json');    
 
-    let summaryDetails ={
-      driverNote:this.state.driverNote,
-      driverName:this.state.driverName,
-      driverPhone:this.state.driverPhone,
-      recipientName:this.state.recipientName,
-      recipientPhone:this.state.recipientPhone,
-      pickUpAddress:this.props.navigation.getParam('pickUpAddress'),
-      dropOffAdress:this.props.navigation.getParam('dropOffAdress'),
-      selected_item:this.props.navigation.getParam('selected_item'),
-      imagePath:this.props.navigation.getParam('imagePath'),
-      deliverDate:this.props.navigation.getParam('deliverDate'),
-      deliverTime:this.props.navigation.getParam('deliverTime')
+
+    let orderDetail = {};
+
+    orderDetail.customer_id=123,
+    orderDetail.driver_id=253,
+
+    orderDetail.pick_up_loc_lat_Ing=  this.props.pickup_formatted_address.lat+','+this.props.pickup_formatted_address.lng,
+    orderDetail.drop_off_loc_lat_Ing=this.props.dropoff_formatted_address.lat+','+this.props.dropoff_formatted_address.lng,
+    orderDetail.pick_up_loc=this.props.pickup_formatted_address.address,
+    orderDetail.drop_off_loc=this.props.dropoff_formatted_address.address,
+
+    orderDetail.item_id=12,
+    orderDetail.item_pics=this.props.navigation.getParam('imagePath'),
+    orderDetail.price =this.props.price,
+
+    orderDetail.pick_up_time=this.props.navigation.getParam('deliverTime'),
+    orderDetail.pick_up_date=this.props.navigation.getParam('deliverDate'),
+    orderDetail.delivery_date=this.props.navigation.getParam('deliverDate'),
+    orderDetail.delivery_time=this.props.navigation.getParam('deliverTime'),
+    orderDetail.driver_note=this.state.driverNote,
+
+
+    orderDetail.sender_name=this.state.senderName,
+    orderDetail.sender_phone=this.senderPhone,
+
+    orderDetail.receiver_name=this.state.recipientName,
+    orderDetail.receiver_phone=this.state.recipientPhone,
+    orderDetail.cash_paymen_method=this.state.checkboxValue,
+
+    orderDetail.driver_name="this.state.senderName",
+    orderDetail.distance_travelled=this.props.distance,
+    orderDetail.driver_phone=9699696969,
+    orderDetail.is_active=true,
+    orderDetail.created_date=this.props.navigation.getParam('deliverDate'),
+    orderDetail.order_date=this.props.navigation.getParam('deliverDate'),
+    orderDetail.driver_rating=4.5    
+    
+
+    dbhelper.insertRowIndrop_ship_order(orderDetail);
+
+    this.addDropShipDetails(orderDetail)
+    this.GetDropShipDetails();
+
+    // let summaryDetails ={
+    //   driverNote:this.state.driverNote,
+    //   senderName:this.state.senderName,
+    //   senderPhone:this.state.senderPhone,
+    //   recipientName:this.state.recipientName,
+    //   recipientPhone:this.state.recipientPhone,
+    //   pickUpAddress:this.props.navigation.getParam('pickUpAddress'),
+    //   dropOffAdress:this.props.navigation.getParam('dropOffAdress'),
+    //   selected_item:this.props.navigation.getParam('selected_item'),
+    //   imagePath:this.props.navigation.getParam('imagePath'),
+    //   deliverDate:this.props.navigation.getParam('deliverDate'),
+    //   deliverTime:this.props.navigation.getParam('deliverTime'),
+    //   collectCashFrom:this.state.checkboxValue,
         
-    }
-    this.props.navigation.navigate('OrderDetail', {summaryDetails});
+    // }
+    // this.props.navigation.navigate('OrderDetail', {summaryDetails});
 
   }
 
+  addDropShipDetails(orderDetail) {
+      fetch(ads + url.dropship_add_order, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderDetail)
+      })
+        .then(response => response.json())
+        .then(responseJson => {
+          console.log('order posted response: ',responseJson)
+        })
+        .catch(error => {
+          console.log('error ->', error);
+      });
+  }
+  GetDropShipDetails() {
+      fetch(ads + url.dropship_get_order, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        // Authorization: `Bearer ${token}` //If need pass authorization token  like this and get token which already defined.
+        },
+      
+      })
+        .then(response => response.json())
+        .then(responseJson => {
+          console.log('oder details: ',responseJson)
+        })
+        .catch(error => {
+          console.log('error ->', error);
+      });
+  }
   handleClose = () => {
     console.log('state animation close',this.state.animation)
     Animated.timing(this.state.animation, {
@@ -406,7 +557,15 @@ const mapStateToProps = state => {
   return {
     lang: state.setActiveLanguage.data,
     curentlang: state.setActiveLanguage.lang,
-    proccess: state.setActiveProccess.proccess
+    proccess: state.setActiveProccess.proccess,
+    price:state.setDropShipDetails.price,
+    distance:state.setDropShipDetails.distance,
+    driverDistance:state.setDropShipDetails.driverDistance,
+    pickup_formatted_address:state.setDropShipDetails.pickup_formatted_address,
+    dropoff_formatted_address:state.setDropShipDetails.dropoff_formatted_address,
+    deliverDate:state.setDropShipDetails.deliverDate,
+    deliverTime:state.setDropShipDetails.deliverTime,
+    user: state.setActiveUser.user,
   };
 };
 const mapDispatchToProps = dispatch => {
