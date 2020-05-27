@@ -40,8 +40,8 @@ export const url = {
 
   // ------------------------- dropship ---------------------
   
-    dropship_add_order: "/dropship/getorder",
-    dropship_get_order: "/dropship/addorder",
+    dropship_add_order: "/dropship/addorder",
+    dropship_get_order: "/dropship/getorder",
     dropship_get_driver: "/dropship/driver",
   
 

@@ -439,33 +439,25 @@ class Summary extends Component {
 
 
     let orderDetail = {};
-
     orderDetail.customer_id=123,
     orderDetail.driver_id=253,
-
     orderDetail.pick_up_loc_lat_Ing=  this.props.pickup_formatted_address.lat+','+this.props.pickup_formatted_address.lng,
     orderDetail.drop_off_loc_lat_Ing=this.props.dropoff_formatted_address.lat+','+this.props.dropoff_formatted_address.lng,
     orderDetail.pick_up_loc=this.props.pickup_formatted_address.address,
     orderDetail.drop_off_loc=this.props.dropoff_formatted_address.address,
-
     orderDetail.item_id=12,
     orderDetail.item_pics=this.props.navigation.getParam('imagePath'),
     orderDetail.price =this.props.price,
-
     orderDetail.pick_up_time=this.props.navigation.getParam('deliverTime'),
     orderDetail.pick_up_date=this.props.navigation.getParam('deliverDate'),
     orderDetail.delivery_date=this.props.navigation.getParam('deliverDate'),
     orderDetail.delivery_time=this.props.navigation.getParam('deliverTime'),
     orderDetail.driver_note=this.state.driverNote,
-
-
     orderDetail.sender_name=this.state.senderName,
     orderDetail.sender_phone=this.senderPhone,
-
     orderDetail.receiver_name=this.state.recipientName,
     orderDetail.receiver_phone=this.state.recipientPhone,
     orderDetail.cash_paymen_method=this.state.checkboxValue,
-
     orderDetail.driver_name="this.state.senderName",
     orderDetail.distance_travelled=this.props.distance,
     orderDetail.driver_phone=9699696969,
@@ -473,29 +465,26 @@ class Summary extends Component {
     orderDetail.created_date=this.props.navigation.getParam('deliverDate'),
     orderDetail.order_date=this.props.navigation.getParam('deliverDate'),
     orderDetail.driver_rating=4.5    
-    
-
     dbhelper.insertRowIndrop_ship_order(orderDetail);
-
     this.addDropShipDetails(orderDetail)
     this.GetDropShipDetails();
 
-    // let summaryDetails ={
-    //   driverNote:this.state.driverNote,
-    //   senderName:this.state.senderName,
-    //   senderPhone:this.state.senderPhone,
-    //   recipientName:this.state.recipientName,
-    //   recipientPhone:this.state.recipientPhone,
-    //   pickUpAddress:this.props.navigation.getParam('pickUpAddress'),
-    //   dropOffAdress:this.props.navigation.getParam('dropOffAdress'),
-    //   selected_item:this.props.navigation.getParam('selected_item'),
-    //   imagePath:this.props.navigation.getParam('imagePath'),
-    //   deliverDate:this.props.navigation.getParam('deliverDate'),
-    //   deliverTime:this.props.navigation.getParam('deliverTime'),
-    //   collectCashFrom:this.state.checkboxValue,
+    let summaryDetails ={
+      driverNote:this.state.driverNote,
+      senderName:this.state.senderName,
+      senderPhone:this.state.senderPhone,
+      recipientName:this.state.recipientName,
+      recipientPhone:this.state.recipientPhone,
+      pickUpAddress:this.props.navigation.getParam('pickUpAddress'),
+      dropOffAdress:this.props.navigation.getParam('dropOffAdress'),
+      selected_item:this.props.navigation.getParam('selected_item'),
+      imagePath:this.props.navigation.getParam('imagePath'),
+      deliverDate:this.props.navigation.getParam('deliverDate'),
+      deliverTime:this.props.navigation.getParam('deliverTime'),
+      collectCashFrom:this.state.checkboxValue,
         
-    // }
-    // this.props.navigation.navigate('OrderDetail', {summaryDetails});
+    }
+  this.props.navigation.navigate('OrderDetail', {summaryDetails});
 
   }
 
@@ -508,7 +497,7 @@ class Summary extends Component {
         },
         body: JSON.stringify(orderDetail)
       })
-        .then(response => response.json())
+        .then(response => response.text())
         .then(responseJson => {
           console.log('order posted response: ',responseJson)
         })
@@ -522,11 +511,10 @@ class Summary extends Component {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-        // Authorization: `Bearer ${token}` //If need pass authorization token  like this and get token which already defined.
         },
       
       })
-        .then(response => response.json())
+        .then(response => response.text())
         .then(responseJson => {
           console.log('oder details: ',responseJson)
         })
